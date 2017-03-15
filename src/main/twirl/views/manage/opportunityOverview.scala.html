@@ -1,0 +1,200 @@
+@import models._
+
+@(errs: Seq[forms.validation.FieldError], backUrl:String, opportunity: Opportunity, app: ApplicationForm, tabNumber: Option[Int] = None)
+
+@username() = @{
+    Some("Portfolio Peter")
+}
+
+@import helpers._
+
+@actionLink = @{
+    if (opportunity.publishedAt.isEmpty) controllers.manage.routes.OpportunityController.publish(opportunity.id)
+    else controllers.manage.routes.OpportunityController.duplicate(opportunity.id)
+}
+
+@actionLabel = @{
+    if (opportunity.publishedAt.isEmpty) "Publish opportunity"
+    else "Duplicate opportunity"
+}
+@errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
+
+@main(s"Opportunity template setup - BEIS", displayUserName=username(),
+backLink=Some(BackLink("Opportunity library", controllers.manage.routes.OpportunityController.showOpportunityLibrary().url))) {
+
+<!-- main content -->
+    @opportunity.duplicatedFrom.map { fromId =>
+        <div class="rifs-heading-panel">
+            This is a copy of <a href="@controllers.manage.routes.OpportunityController.showOverviewPage(fromId)">@formatId(fromId.id)</a>
+        </div>
+    }
+
+    <div class="grid-row">
+    <div class="column-two-thirds">
+
+        @if(errs.nonEmpty) {
+        <div class="panel @errorClass" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+            <ul class="list list-bullet">
+                @errs.map { e =>
+                <li class="bold-small">
+                    @e.path &nbsp;
+                    @e.err
+                </li>
+                }
+            </ul>
+        </div>
+        }
+
+        <h1 class="heading-xlarge">
+            <span class="heading-secondary">@formatId(opportunity.id.id): @opportunity.title</span>
+            Opportunity template
+        </h1>
+
+        <form method="POST" action="@actionLink">
+
+            <section class="more">
+
+                <div class="js-tabs nav-tabs">
+                    <ul>
+                        <li><a href="#opportunity-setup">Set up</a></li>
+                        <li><a href="#opportunity-questions">Questions</a></li>
+                        <li><a href="#opportunity-options">Options</a></li>
+                    </ul>
+                </div>
+
+
+                <div class="js-tab-content tab-content">
+
+                    <div id="opportunity-setup" class="js-tab-pane tab-pane">
+                        <p>This opportunity can be duplicated for reuse.</p>
+                        <table class="spacious">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Opportunity set-up</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        1. <a id="op-setup-link1"
+                                              href="@controllers.manage.routes.TitleController.view(opportunity.id)"
+                                            > Opportunity title</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        2. <a id="op-setup-link2"
+                                              href="@controllers.manage.routes.DeadlineController.view(opportunity.id)"
+                                            > Opportunity deadlines</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        3. <a id="op-setup-link3"
+                                              href="@controllers.manage.routes.GrantValueController.view(opportunity.id)"
+                                            > Maximum grant value</a>
+                                    </td>
+                                </tr>
+
+                                @opportunity.description.sortBy(_.sectionNumber).zipWithIndex.map { case (oppDesc, num) =>
+                                <tr>
+                                    <td>
+                                        @(s"${num + 4}.")
+                                        <a id="op-setup-link@(num + 4)"
+                                        href="@controllers.manage.routes.OppSectionController.view(opportunity.id, oppDesc.sectionNumber)">
+                                            @oppDesc.title
+                                        </a>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div id="opportunity-questions" class="js-tab-pane tab-pane">
+                        <p>These applicant questions are pre-set for this opportunity.</p>
+                        <table class="spacious">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Applicant questions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @app.sections.sortBy(_.sectionNumber).map { fs =>
+                                <tr>
+                                    <td>
+                                        @fs.sectionNumber.num. <a id="section-@fs.sectionNumber.num-link"
+                                                              href="@controllers.manage.routes.OpportunityController.viewQuestions(opportunity.id, fs.sectionNumber)"
+                                                            > @fs.title</a>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div id="opportunity-options" class="js-tab-pane tab-pane">
+                        <p>These options are pre-selected for this opportunity.</p>
+                        <table class="spacious">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Opportunity variables</th>
+                                    <th scope="col">Selected</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Grant type</td><td>Seminar</td>
+                                </tr>
+                                <tr>
+                                    <td>Cost type</td><td>FEC</td>
+                                </tr>
+                                <tr>
+                                    <td>Grant mode</td><td>Responsive</td>
+                                </tr>
+                                <tr>
+                                    <td>Submission check</td><td>No</td>
+                                </tr>
+                                <tr>
+                                    <td>Peer review</td><td>No</td>
+                                </tr>
+                                <tr>
+                                    <td>Peer review sift</td><td>No</td>
+                                </tr>
+                                <tr>
+                                    <td>Applicant response</td><td>No</td>
+                                </tr>
+                                <tr>
+                                    <td>Panel</td><td>No</td>
+                                </tr>
+                                <tr>
+                                    <td>Payment</td><td>Claim</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <p class="rifs-form-buttons">
+                <input type="submit" name="@Save.name" class="button button--start" value="@actionLabel">
+                <a href="@controllers.manage.routes.OpportunityController.showOpportunityPublishPreview(opportunity.id, None)" class="flat nobreak">
+                Applicant view</a>
+            </p>
+        </form>
+    </div>
+
+    <div id="support-column" class="column-third">
+        <hr class="hr-blue">
+        <h2 class="heading-medium no-top-margin">Support</h2>
+        <ul class="list spacious">
+            <li>
+                <a href="@controllers.manage.routes.OpportunityController.showPMGuidancePage(backUrl)">
+                    Guidance on opportunity set-up</a>
+            </li>
+        </ul>
+    </div>
+</div>
+}

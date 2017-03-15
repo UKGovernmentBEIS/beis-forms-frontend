@@ -1,0 +1,90 @@
+@import models._
+@import partials._
+@import helpers._
+
+@(app: ApplicationDetail, errs: Seq[forms.validation.SectionError])
+
+@errorClass = @{if(errs.nonEmpty) "rifs-error-panel" else ""}
+
+@changePersonalRef(title: String) = {
+    <a href="@controllers.routes.ApplicationController.editPersonalRef(app.id)">@title</a>
+}
+
+@main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.StartPageController.startPage().url).url)), displayUserName=Some("Experienced Eric")) {
+    <!-- main content -->
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <div>
+                <h1 class="heading-xlarge">
+                    <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
+                    Application overview
+                </h1>
+
+                <div class="grid-row">
+                    <div class="column-half">
+                        <p>
+                            @app.personalReference.getOrElse(changePersonalRef("Add personal reference"))
+                        </p>
+                    </div>
+                    <div class="column-half text-center-lg-only ">
+                        <p>
+                            @app.personalReference.map(_=>changePersonalRef("Change"))
+                        </p>
+                    </div>
+                </div>
+
+                <p>Complete all application sections before submitting to RIFS.</p>
+            </div>
+
+            @if(errs.nonEmpty) {
+                <div class="panel @errorClass" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+                    <p class="bold-small">All questions must be answered</p>
+                    <ul class="list list-bullet">
+                        @errs.map { e =>
+                            <li class="bold-small">
+                                <a href="@controllers.routes.ApplicationController.showSectionForm(app.id, e.formSection.sectionNumber)">
+                                @e.formSection.title </a> &nbsp;
+                                @e.msg
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <form method="POST"
+            action="@controllers.routes.ApplicationController.submit(app.id)">
+                <div>
+                    <table class="spacious">
+                        <thead>
+                            <tr>
+                                <th scope="col">Event details</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @app.applicationForm.sections.sortBy(_.sectionNumber).map { fs =>
+                            <tr>
+                                <td>
+                                    @fs.sectionNumber.num. <a id="section-@fs.sectionNumber.num-link" href="@controllers.routes.ApplicationController.showSectionForm(app.id, fs.sectionNumber)"> @fs.title</a>
+                                </td>
+                                <td class="status-column">
+                                @statusText(app, fs.sectionNumber)
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                    <p class="rifs-form-buttons">
+                        <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS">
+                        <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(app.id)" class="flat nobreak">
+                            Preview application</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <div id="support-column" class="column-third">
+            @sidebar(app.opportunity.id, app.sectionCount, app.completedSectionCount)
+        </div>
+    </div>
+}

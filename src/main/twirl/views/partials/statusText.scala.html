@@ -1,0 +1,7 @@
+@(overview: ApplicationDetail, sectionNumber: AppSectionNumber)
+<span class="bold">
+    @overview.section(sectionNumber).map(os => os.status).getOrElse("Not started")
+</span>
+@if(overview.section(sectionNumber).map(os => os.status).getOrElse("Not started") == "Completed") {
+   <img src="@routes.Assets.at("images/checkmark-26x26.png")" alt="" width=26 height=26 class="greentick">
+}

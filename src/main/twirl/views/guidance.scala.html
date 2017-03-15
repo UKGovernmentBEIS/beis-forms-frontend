@@ -1,0 +1,62 @@
+@(opportunityId: OpportunityId)
+
+
+@main(s"Guidance on grants - BEIS", displayUserName=Some("Experienced Eric")) {
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <div class="text">
+            <section>
+                <h1 class="heading-xlarge">Big Energy Saving Network 2016/17</h1>
+
+
+                <h2 class="heading-large">Guidance on Technical Equipment</h2>
+                <div>
+                    <p>Please note: </br>
+                        completed applications should be received by email to besn@@decc.gsi.gov.uk by Midnight on Sunday 10th July 2016. We will also accept printed applications in the post or hand delivered but these must be received no later than Friday 8th July 2016..</p>
+
+                    <p>Postal address:</br>
+                        Big Energy Saving Network, Area 4A </br>
+                        Retail Markets Team </br>
+                        Department of Energy & Climate Change </br>
+                        3 Whitehall Place </br>
+                        London SW1A 2AW </br>
+                        For the attention of: Lydia Toy</p>
+                </div>
+
+
+                <div>
+                    <p>Key dates: </br>
+                        27th May 2016 – applications open </br>
+                        10th July 2016 Midnight – deadline for receipt of electronic applications </br>
+                        29th July 2016 – aim to notify successful applicants, issue grant agreements and links to online training modules.
+                    </p>
+                </div>
+
+
+                <div>
+                    <p>
+                        The aims of the fund and the criteria by which bids will be assessed are contained in the Guidance document. Any activity funded through this competition must be completed by 24th March 2017.</p>
+
+
+                </div>
+
+            </section>
+        </div>
+    </div>
+
+
+    <div id="support-column" class="column-third">
+        <hr class="hr-blue">
+        <h2 class="heading-medium no-top-margin">Support</h2>
+        <ul class="list">
+            <li>
+                <a href="@controllers.routes.OpportunityController.showOpportunity(opportunityId, None)">
+                    View opportunity details</a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+}

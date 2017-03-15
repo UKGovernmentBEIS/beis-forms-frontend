@@ -1,0 +1,20 @@
+@(os: Seq[Opportunity])
+
+@main("Opportunity list - BEIS", backLink=Some(BackLink("Return to dashboard", controllers.routes.StartPageController.startPage().url)), displayUserName=Some("Experienced Eric")) {
+    <div>
+        <h1 class="heading-xlarge">Open BEIS Opportunities</h1>
+
+        <p class="lede">Links to all open BEIS opportunities</p>
+
+        <table class="spacious">
+            <tr>
+                <th role="presentation">Opportunity title</th>
+            </tr>
+            @for((o,i) <- os.zipWithIndex) {
+                <tr><td>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></td></tr>
+            }
+        </table>
+
+    </div>
+}
+

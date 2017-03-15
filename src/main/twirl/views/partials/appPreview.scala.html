@@ -1,0 +1,16 @@
+@(
+        app: ApplicationDetail,
+        answers: Map[AppSectionNumber, Seq[forms.Field]]
+)
+
+@import views.html.partials.appSectionPreview
+
+<article>
+    @app.applicationForm.sections.sortBy(_.sectionNumber).map { formSection =>
+        @app.sectionDetail(formSection.sectionNumber).map(s => appSectionPreview(s))
+    }
+
+<p class="rifs-form-buttons">
+    <a href="@controllers.routes.ApplicationController.show(app.id)" class="button">Close</a>
+</p>
+</article>
