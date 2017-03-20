@@ -15,17 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package config
+package controllers
 
-case class BusinessConfig(baseUrl: String, emailto: String, addressSearch: String)
-case class FileConfig(fileuploaddirectory: String, filedownloaddirectory: String)
+import org.activiti.engine.delegate.{DelegateExecution, JavaDelegate}
 
-case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig, file: FileConfig)
+/**
+ * Example service task that does nothing to demonstrate logging, via the `LoggingEventListener`.
+ */
+class ExampleServiceTask extends JavaDelegate {
 
-object Config {
-
-  import pureconfig._
-
-  lazy val config: Config = loadConfig[Config].get
-
+  override def execute(execution: DelegateExecution): Unit = {
+    // Do nothing
+  }
 }

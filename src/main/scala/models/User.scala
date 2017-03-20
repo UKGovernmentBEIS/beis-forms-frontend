@@ -15,17 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package config
+package models
 
-case class BusinessConfig(baseUrl: String, emailto: String, addressSearch: String)
-case class FileConfig(fileuploaddirectory: String, filedownloaddirectory: String)
+/**
+  * Created by venkatamutyala on 18/03/2017.
+  */
+case class User(name: String, password: String, role: String)
+case class AdminUser(name: String, password: String, role: String)
+case class PortfolioUser(name: String, password: String, role: String)
 
-case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig, file: FileConfig)
-
-object Config {
-
-  import pureconfig._
-
-  lazy val config: Config = loadConfig[Config].get
-
-}

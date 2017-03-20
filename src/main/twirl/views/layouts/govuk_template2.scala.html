@@ -46,6 +46,9 @@
     <!--[if gt IE 8]><!--><link href="@routes.Assets.at("stylesheets/application.css")" media="all" rel="stylesheet" /><!--<![endif]-->
     <link href="@routes.Assets.at("stylesheets/application-print.css")" media="print" rel="stylesheet" />
     @head
+    <script src="@routes.Assets.at("javascripts/vendor/jquery/jquery-1.11.3.min.js")"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   </head>
 
   <body class="@bodyClasses.getOrElse("")">
@@ -124,7 +127,6 @@
 
   <div id="global-app-error" class="app-error hidden"></div>
 
-  <script src="@routes.Assets.at("javascripts/vendor/jquery/jquery-1.11.3.min.js")"></script>
   <script src="@routes.Assets.at("javascripts/govuk/jquery.tabs.js")"></script>
   <script src="@routes.Assets.at("javascripts/govuk/jquery.history.js")"></script>
   <script src="@routes.Assets.at("javascripts/govuk/govuk-template.js")"></script>

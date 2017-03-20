@@ -7,6 +7,10 @@ GET         /robots.txt                                               controller
 GET         /assets/*file                                             controllers.Assets.at(path="/public", file)
 
 GET         /                                                         controllers.StartPageController.startPage
+GET         /login                                                    controllers.UserController.loginForm
+POST        /login                                                    controllers.UserController.loginFormSubmit
+
+
 GET         /opportunities                                            controllers.OpportunityController.showOpportunities
 
 GET         /opportunities/guidance/:opportunityId                    controllers.OpportunityController.showGuidancePage(opportunityId:OpportunityId)

@@ -26,6 +26,19 @@ textarea.form-control {
   width: 50%;
 }
 
+input.address-text-field,
+textarea.form-control {
+  padding: 6px;
+  width: 80%;
+}
+
+
+input.login-text-field,
+textarea.form-control {
+  padding: 6px;
+  width: 80%;
+}
+
 textarea.form-control {
   height: 10em;
 }

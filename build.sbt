@@ -54,7 +54,9 @@ libraryDependencies ++= Seq(
   "com.lunaryorn" %% "play-json-refined" % "0.1",
 
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
-  "org.jsoup" % "jsoup" % "1.9.2" % Test
+  "org.jsoup" % "jsoup" % "1.9.2" % Test,
+  "org.activiti" % "activiti-engine" % "5.15",
+  "com.h2database" % "h2" % "1.3.175"
 )
 
 
