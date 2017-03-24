@@ -32,14 +32,17 @@ import forms.validation.FieldValidator.Normalised
 case class FileUploadField(label: Option[String], name: String, maxWords: Int) extends Field {
 
   implicit val fileuploadReads = Json.reads[FileUploadItem]
-  //implicit val fileListReads = Json.reads[FileList]
 
   override val check: FieldCheck = FieldChecks.mandatoryText(maxWords)
 
   override def previewCheck: FieldCheck = FieldChecks.mandatoryCheck
 
-  override def renderPreview(questions: Map[String, Question], answers: JsObject) =
-    views.html.renderers.preview.fileUpload(this, JsonHelpers.flatten(answers))
+  override def renderPreview(questions: Map[String, Question], answers: JsObject) = {
+
+    val itemValues: Seq[JsValue] = (answers \ "items").validate[JsArray].asOpt.map(_.value).getOrElse(Seq())
+    val fileUploadItems = itemValues.flatMap(_.validate[FileUploadItem].asOpt)
+    views.html.renderers.preview.fileUpload(fileUploadItems)
+  }
 
   override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) = {
 

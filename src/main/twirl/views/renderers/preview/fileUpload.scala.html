@@ -1,6 +1,10 @@
-@(field: forms.FileUploadField, answers: Map[String, String])
+@(files: Seq[forms.FileUploadItem])
 
 <div>
-    <h3>@field.label</h3>
-    @answers.getOrElse(field.name, "").split("\n\n").filterNot(_ == "").map { p => <p class="text preview-text">@p</p> }
+
+    @files.map{ file=>
+    <p>@file.supportingDocuments</p>
+    }
+
+
 </div>

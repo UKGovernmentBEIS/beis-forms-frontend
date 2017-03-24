@@ -108,8 +108,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
     val oppdate = request.opportunity.startDate
 
     val valueError: Option[FieldError] =
-      if (request.opportunity.value.amount > 2000)
-        Some(FieldError("", "Maximum grant value is over £2000. Please review "))
+      if (request.opportunity.value.amount > 5000)
+        Some(FieldError("", "Maximum grant value is over £5000. Please review "))
       else None
 
     val dateError: Option[FieldError] =
@@ -119,8 +119,8 @@ class OpportunityController @Inject()(opportunities: OpportunityOps, appForms: A
 
     val errs: Seq[FieldError] = (valueError ++ dateError).toSeq
 
-    if (request.opportunity.value.amount <= 2000 && oppdate.isAfter(LocalDate.now())) {
-      val emailto = "Portfolio.Manager@rifs.gov.uk"
+    if (request.opportunity.value.amount <= 5000 && oppdate.isAfter(LocalDate.now())) {
+      val emailto = "Portfolio.Manager@beis.gov.uk"
       val dtf = DateTimeFormat.forPattern("HH:mm:ss")
       opportunities.publish(id).map {
         case Some(dt) =>

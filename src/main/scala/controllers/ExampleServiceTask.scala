@@ -25,6 +25,8 @@ import org.activiti.engine.delegate.{DelegateExecution, JavaDelegate}
 class ExampleServiceTask extends JavaDelegate {
 
   override def execute(execution: DelegateExecution): Unit = {
+
+    println("*********** In ExampleServiceTask Execute ****************")
     // Do nothing
   }
 }

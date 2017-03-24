@@ -14,7 +14,7 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 @invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
 
 @questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text</label>
-<p class="text">@q.longDescription</p>
+<!--<p class="text">@q.longDescription</p>  -->
 <details>
     <summary role="button"><span class="summary">Help with this section</span></summary>
     <div class="panel panel-border-narrow">@for(line <- splitLines(q.helpText)) {
@@ -23,64 +23,10 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 </details>
 }
 
-
-<!--------Address Search using JQuery AutoComplete---------------------->
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<style>
-</style>
-
-<script>
-  $( function() {
-    function log( message ) {
-      $( "<div>" ).text( message ).prependTo( "#companyAddress" );
-      $( "#companyAddress" ).scrollTop( 0 );
-    }
-
-    function populateAddress( message ) {
-    message = message.replace(/,/g, "\r");
-    message = message.replace(/ /g, "");
-    $("#companyAddress").val(message);
-    }
-
-    $( "#address" ).autocomplete({
-      source: function( request, response ) {
-        $.ajax( {
-          url: "https://api.ordnancesurvey.co.uk/places/v1/addresses/find?key=0k5Km8A2EfXu11vD4inNsv1QXZ4okzMs",
-          dataType: "JSON",
-          data: {
-            query: request.term
-          },
-          success: function( data ) {
-            var addressResults = data.results
-            var addressArr = [];
-            $.each(addressResults, function (index, address) {
-                //console.log(address.DPA.ADDRESS);
-                addressArr.push(address.DPA.ADDRESS); //push values here
-            });
-            response( addressArr );
-          }
-        } );
-      },
-      minLength: 2,
-      select: function( event, ui ) {
-      console.log(ui.item.value);
-      console.log(ui.item.id);
-      populateAddress( ui.item.value);
-      }
-    } );
-  } );
-  </script>
-
-<!------------Address Search ends----------->
-
 <div class='form-group @errorClass'>
     @errors.map { e =>
     <span class="error-message" role="alert">@e.err</span>
     }
-
-    <p>Please enter any text to search your address:
-        <input type="text" id="address" class="form-control address-text-field " title="address" name="address" value="" aria-label="what is your company Address? " aria-invalid="false">
-    </p>
 
     <label for="@field.name">@field.label</label>
     <textarea id="@field.name" class="form-control textarea-resize" title="@field.name" name="@field.name">@answers.get(field.name)</textarea>

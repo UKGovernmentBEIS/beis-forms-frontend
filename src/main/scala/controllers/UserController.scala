@@ -17,8 +17,12 @@
 
 package controllers
 
+import java.util
 import javax.inject.Inject
 
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity
+import org.activiti.engine.repository.ProcessDefinition
+import org.activiti.engine.task.Task
 import play.api.mvc.{Action, Controller}
 import play.api.data.Form
 import play.api.data.Forms._
@@ -29,20 +33,17 @@ import play.api.mvc.Security
 import org.activiti.engine.{ProcessEngine, ProcessEngines}
 import org.h2.jdbcx.JdbcDataSource
 
+/********************************************************************************
+  This file is for temporary Login till any Security component is deployed.
+  This file also for Activity samples.
+  Please donot use this login file. i.e dont use http://localhost:9000/login
+  Use only http://localhost:9000
+ *********************************************************************************/
 
 class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
 
   implicit val postWrites = Json.writes[LoginForm]
 
- /* val loginform = Form(
-    tuple(
-      "name" -> text,
-      "password" -> text
-    ) verifying ("Invalid email or password", result => result match {
-      case (name, password) => check(name, password)
-    })
-  )
-*/
   val loginform:Form[LoginForm] = Form(
     mapping(
       "name" -> text,
@@ -58,7 +59,6 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
   }
 
   def loginForm = Action{
-    //Ok(views.html.startPage())
     Ok(views.html.loginForm("", loginform))
   }
 
@@ -75,12 +75,9 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
         val jdbcUrl = "jdbc:h2:activiti"
         implicit val ds = new JdbcDataSource()
         ds.setURL(jdbcUrl)
-
         val processEngine = new ProcessEngineWrapper
 
-        //logger.info("Deploy business process")
-        // (start) --flow1--> [example-task] --flow2--> (end)
-        processEngine deploy {
+        val processId = processEngine.deploy {
           <process id="logging-test" name="Logging Test" isExecutable="true">
             <startEvent id="start" name="Start"></startEvent>
             <sequenceFlow id="flow1" sourceRef="start" targetRef="example-task"></sequenceFlow>
@@ -90,14 +87,20 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
           </process>
         }
 
-         /*val pdid = engine.getRepositoryService().
-          createProcessDefinitionQuery().
-          processDefinitionId(pid).
-          singleResult().
-          getId()*/
+        val pdl:util.List[ProcessDefinition]  = processEngine.engine.getRepositoryService().
+          createProcessDefinitionQuery().list();
 
-        //Redirect(routes.Application.index).withSession(Security.username -> user._1)
-         //val pdl = pe.getRepositoryService().createProcessDefinitionQuery().list();
+        start(2401, processEngine)
+
+        val pdl1:util.List[ProcessDefinition] = processEngine.engine.getRepositoryService().
+          createProcessDefinitionQuery().list();
+
+        val utl:util.List[Task] = processEngine.engine.getTaskService().createTaskQuery().
+          taskUnnassigned().list();
+
+        val atl:util.List[Task] = processEngine.engine.getTaskService().createTaskQuery().
+          taskAssignee(Security.username).list();
+
         if(user.name.equals("applicant"))
         Redirect(routes.OpportunityController.showOpportunities()).withSession(Security.username -> user.name)
         else if(user.name.equals("portfoliomanager"))
@@ -107,30 +110,10 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
       }
     )
   }
-/*  def start( pid:String){
-    val pdid = pe.getRepositoryService().createProcessDefinitionQuery().processDefinitionId(pid).
-      singleResult().
-      getId()
-     pe.getRuntimeService().startProcessInstanceById(pdid)
-       index()
+
+  def start(pid:Int, processEngine: ProcessEngineWrapper){
+    processEngine.engine.getRuntimeService().startProcessInstanceByKey("logging-test")
   }
-
-def index() {
-  val user = Security.username
-  val pdl = pe.getRepositoryService().
-    createProcessDefinitionQuery().list();
-
-  val utl = pe.getTaskService().createTaskQuery().
-    taskUnnassigned().list();
-
- val atl = pe.getTaskService().createTaskQuery().taskAssignee("").list()
-  println("---------------------" + user)
-      //render(user, pdl, utl, atl)
-  Redirect(routes.OpportunityController.showOpportunities()).withSession(Security.username -> user)
-
-}
-  */
-
 
 }
 

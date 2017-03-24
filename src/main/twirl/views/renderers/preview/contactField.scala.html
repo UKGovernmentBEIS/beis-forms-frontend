@@ -1,0 +1,18 @@
+@(field: forms.ContactField, answers: Map[String, String])
+
+<p>
+    <h3>Telephone</h3>
+    @answers.getOrElse("contactDetails.telephone", "Not Available")
+</p>
+<p>
+    <h3>Email</h3>
+    @answers.getOrElse("contactDetails.email", "Not Available")
+</p>
+<p>
+    <h3>Web Address</h3>
+    @answers.getOrElse("contactDetails.web", "Not Available")
+</p>
+<p>
+    <h3>Twitter</h3>
+    @answers.getOrElse("contactDetails.twitter", "Not Available")
+</p>
