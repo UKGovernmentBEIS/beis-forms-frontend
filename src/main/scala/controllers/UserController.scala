@@ -71,13 +71,16 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
       user=> {
 
         // Set-up an H2 database.
-        Class.forName("org.h2.Driver")
-        val jdbcUrl = "jdbc:h2:activiti"
+        //Class.forName("org.h2.Driver")
+        //val jdbcUrl = "jdbc:h2:activiti"
+        Class.forName("org.postgresql.Driver")
+        val jdbcUrl = "jdbc:postgresql://localhost:5433/activiti"
+
         implicit val ds = new JdbcDataSource()
         ds.setURL(jdbcUrl)
         val processEngine = new ProcessEngineWrapper
 
-        val processId = processEngine.deploy {
+       /* val processId = processEngine.deploy {
           <process id="logging-test" name="Logging Test" isExecutable="true">
             <startEvent id="start" name="Start"></startEvent>
             <sequenceFlow id="flow1" sourceRef="start" targetRef="example-task"></sequenceFlow>
@@ -91,9 +94,9 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
           createProcessDefinitionQuery().list();
 
         start(2401, processEngine)
-
-        val pdl1:util.List[ProcessDefinition] = processEngine.engine.getRepositoryService().
-          createProcessDefinitionQuery().list();
+*/
+ /*      val pdl1:util.List[ProcessDefinition] = processEngine.engine.getRepositoryService().
+         createProcessDefinitionQuery().list();
 
         val utl:util.List[Task] = processEngine.engine.getTaskService().createTaskQuery().
           taskUnnassigned().list();
@@ -101,6 +104,16 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
         val atl:util.List[Task] = processEngine.engine.getTaskService().createTaskQuery().
           taskAssignee(Security.username).list();
 
+        println("=========pdl1:-" + pdl1.size())
+        println("=========pdl1:-" + pdl1.toString())
+
+        println("=========utl:-" + utl.size())
+        println("=========utl:-" + utl.toString())
+
+        println("=========atl:-" + atl.size())
+        println("=========atl:-" + atl.toString())
+
+*/
         if(user.name.equals("applicant"))
         Redirect(routes.OpportunityController.showOpportunities()).withSession(Security.username -> user.name)
         else if(user.name.equals("portfoliomanager"))
