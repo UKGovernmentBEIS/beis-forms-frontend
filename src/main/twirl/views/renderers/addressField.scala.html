@@ -25,6 +25,8 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 
 
 <!--------Address Search using JQuery AutoComplete---------------------->
+<!--------TODO:- Move this JS code to common JS file---------------------->
+
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <style>
 </style>
@@ -45,6 +47,7 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
       source: function( request, response ) {
         $.ajax( {
           url: "https://api.ordnancesurvey.co.uk/places/v1/addresses/find?key=0k5Km8A2EfXu11vD4inNsv1QXZ4okzMs",
+          //TODO:- TAKE OUT HARDCODED VALUES (add above URL and Key in conf file and concatenate here)
           dataType: "JSON",
           data: {
             query: request.term
