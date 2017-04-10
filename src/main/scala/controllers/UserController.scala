@@ -71,15 +71,16 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
       user=> {
 
         // Set-up an H2 database.
-        //Class.forName("org.h2.Driver")
+        /*Class.forName("org.h2.Driver")
         //val jdbcUrl = "jdbc:h2:activiti"
-        Class.forName("org.postgresql.Driver")
+        //Class.forName("org.postgresql.Driver")
         val jdbcUrl = "jdbc:postgresql://localhost:5433/activiti"
 
-        implicit val ds = new JdbcDataSource()
-        ds.setURL(jdbcUrl)
-        val processEngine = new ProcessEngineWrapper
 
+         implicit val ds = new JdbcDataSource()
+         ds.setURL(jdbcUrl)
+         val processEngine = new ProcessEngineWrapper
+        */
        /* val processId = processEngine.deploy {
           <process id="logging-test" name="Logging Test" isExecutable="true">
             <startEvent id="start" name="Start"></startEvent>
