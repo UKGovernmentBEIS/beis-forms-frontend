@@ -18,20 +18,23 @@
 package forms
 
 import controllers.{FieldCheck, FieldChecks, JsonHelpers}
-import forms.validation.{FieldError, FieldHint}
+import forms.validation._
 import models._
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject, Json}
 
-case class CompanyNameField(label: Option[String], name: String, maxWords: Int) extends Field {
-
-  override val check: FieldCheck = FieldChecks.mandatoryText(maxWords)
+case class CompanyInfoField(label: Option[String], name: String, maxWords: Int) extends Field {
+  implicit val companyInfoReads = Json.reads[CompanyInfoValues]
 
   override def previewCheck: FieldCheck = FieldChecks.mandatoryCheck
+  override def check: FieldCheck = FieldChecks.fromValidator(CompanyInfoValidator)
+
+  val companyNameField = TextField(Some("What is your Company Name"), s"$name.companyname", isNumeric = false, 20)
+  val companyNumberField = TextField(Some("What is your Company Number"), s"$name.companynumber", isNumeric = false, 20)
 
   override def renderPreview(questions: Map[String, Question], answers: JsObject) =
-    views.html.renderers.preview.companyNameField(this, JsonHelpers.flatten(answers))
+    views.html.renderers.preview.companyInfoField(this, JsonHelpers.flatten(answers))
 
   override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) = {
-    views.html.renderers.companyNameField(this, questions, JsonHelpers.flatten(answers), errs, hints)
+    views.html.renderers.companyInfoField(this, questions, JsonHelpers.flatten(answers), errs, hints)
   }
 }

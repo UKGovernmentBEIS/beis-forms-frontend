@@ -1,0 +1,129 @@
+@(field: forms.CompanyInfoField,
+questions: Map[String, Question],
+answers: Map[String, String],
+errs: Seq[forms.validation.FieldError],
+hints: Seq[forms.validation.FieldHint])
+
+@import helpers._
+@import eu.timepit.refined.auto._
+
+@errors = @{
+errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
+}
+
+@errorClass = @{
+if(errors.nonEmpty) "error" else ""
+}
+
+@errorClassFor(f: forms.Field) = @{
+if(errs.exists(_.path == f.name)) "error" else ""
+}
+
+@errorsFor(f: forms.Field) = @{
+errs.filter(_.path == f.name)
+}
+
+@errorBlock(f: forms.Field) = @{
+if(errorsFor(f).nonEmpty) {
+<span class="error-message">{errorsFor(f).head.err}</span>
+}
+}
+
+@escapeDotForJQuery(s: String) = @{
+s.replace(".", "\\\\.")
+}
+
+
+<!--------Company Name using JQuery AutoComplete---------------------->
+<!--------TODO:- Move this JS code to common JS file---------------------->
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<style>
+</style>
+
+<script>
+  $( function() {
+
+    function populateCompNumber( nameNumber ) {
+        $("#@escapeDotForJQuery(field.companyNameField.name)").val(nameNumber.name);
+        $("#@escapeDotForJQuery(field.companyNumberField.name)").val(nameNumber.number);
+    }
+
+    $("#@escapeDotForJQuery(field.companyNameField.name)").autocomplete({
+
+      source: function( request, response ) {
+        $.ajax( {
+          url: "https://api.companieshouse.gov.uk/search/companies?items_per_page=20&start_index=0",
+          type: "GET",
+          crossDomain: true,
+		  contentType: "application/json",
+	      dataType: 'json',
+          data: {
+            q: request.term
+          },
+          beforeSend: function(xhr) {
+          xhr.withCredentials = true;
+		  xhr.setRequestHeader("Authorization", "Basic djROUW5ETHhOb3d6bDBjUkhMc3I2REYyWTNSNnNjVk52cFlxOUdxcg==")
+		  //TODO:- TAKE OUT HARDCODED VALUES (add above Key in conf file and encode it later)
+          },
+
+          success: function( data ) {
+            var companyItems = data.items
+            var companyInfo = [];
+            var companyNameNumber;
+            $.each(companyItems, function (index, item) {
+                var companyNameNumber = {label: item.title , name: item.title , number: item.company_number}; //we need name and number only
+                companyInfo.push(companyNameNumber);
+            });
+
+            response( companyInfo );
+          }  //success ends
+        } ); //ajax ends
+      }, //source
+      minLength: 2,
+      select: function( event, ui ) {
+      populateCompNumber( ui.item );
+      }
+
+    } );
+  } );
+  </script>
+
+<!------------Company Name ends----------->
+
+<div class='form-group @errorClass'>
+    @errors.map { e =>
+    <span class="error-message" role="alert">@e.err</span>
+    }
+
+    <label for="@field.name">@field.label</label>
+    <div class="inline right-align hint-text" id="@(field.name)_hint_text">
+        @for(hint <- hints.find(_.path == field.name)) {
+        <span class="js__hint" data-for="@field.name" data-rule="@hint.matchingJsType" data-ruleconfig="@hint.matchingJsConfig">@hint.hint</span>
+        }
+    </div>
+
+    @defining(field.companyNameField) { f =>
+    <div class="column-two-thirds no-l-padding">
+        <div class="form-group @errorClassFor(f)">
+            <label for="@f.name">@f.label</label>
+            @errorBlock(f)
+            <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
+                   value='@answers.get(f.name)' aria-label="what is your company Name? " aria-invalid="false" autocomplete="on">
+            (Please enter any text to search your company name and number
+        </div>
+    </div>
+    }
+
+    @defining(field.companyNumberField) { f =>
+    <div class="column-two-thirds no-l-padding">
+        <div class="form-group @errorClassFor(f)">
+            <label for="@f.name">@f.label</label>
+            @errorBlock(f)
+            <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
+                   value='@answers.get(f.name)'>
+        </div>
+    </div>
+    }
+
+</div>

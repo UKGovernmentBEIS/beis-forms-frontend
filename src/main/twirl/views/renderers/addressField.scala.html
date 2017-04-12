@@ -33,10 +33,6 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 
 <script>
   $( function() {
-    function log( message ) {
-      $( "<div>" ).text( message ).prependTo( "#companyAddress" );
-      $( "#companyAddress" ).scrollTop( 0 );
-    }
 
     function populateAddress( message ) {
     message = message.replace(/, /g, "\r");
@@ -56,7 +52,6 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
             var addressResults = data.results
             var addressArr = [];
             $.each(addressResults, function (index, address) {
-                //console.log(address.DPA.ADDRESS);
                 addressArr.push(address.DPA.ADDRESS); //push values here
             });
 
@@ -66,8 +61,6 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
       },
       minLength: 2,
       select: function( event, ui ) {
-      console.log(ui.item.value);
-      console.log(ui.item.id);
       populateAddress( ui.item.value);
       }
     } );

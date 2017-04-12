@@ -33,7 +33,7 @@ object FieldReads {
   implicit val fileUploadReads = Json.reads[FileUploadField]
   implicit val addressFieldReads = Json.reads[AddressField]
   implicit val contactFieldReads = Json.reads[ContactField]
-  implicit val CompanyNameFieldReads = Json.reads[CompanyNameField]
+  implicit val CompanyInfoFieldReads = Json.reads[CompanyInfoField]
 
   implicit object fieldReads extends Reads[Field] {
     override def reads(json: JsValue): JsResult[Field] = {
@@ -47,7 +47,7 @@ object FieldReads {
           case "fileUpload" => json.validate[FileUploadField]
           case "address" => json.validate[AddressField]
           case "contact" => json.validate[ContactField]
-          case "companyName" => json.validate[CompanyNameField]
+          case "companyInfo" => json.validate[CompanyInfoField]
           case t => JsError(s"unknown field type $t")
         }
       }
