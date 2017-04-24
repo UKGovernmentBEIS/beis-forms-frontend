@@ -10,7 +10,7 @@
     <a href="@controllers.routes.ApplicationController.editPersonalRef(app.id)">@title</a>
 }
 
-@main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.OpportunityController.wip(routes.StartPageController.startPage().url).url)), displayUserName=Some("Experienced Eric")) {
+@main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.dashBoard().url)), displayUserName=Some("Experienced Eric")) {
     <!-- main content -->
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -33,7 +33,7 @@
                     </div>
                 </div>
 
-                <p>Complete all application sections before submitting to RIFS.</p>
+                <p>Complete all application sections before submitting to BEIS.</p>
             </div>
 
             @if(errs.nonEmpty) {

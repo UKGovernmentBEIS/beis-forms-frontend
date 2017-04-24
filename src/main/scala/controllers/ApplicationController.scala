@@ -49,8 +49,12 @@ class ApplicationController @Inject()(
   implicit val fileuploadItemF = Json.format[FileUploadItem]
   implicit val fileListReads = Json.reads[FileList]
 
-  def showOrCreateForForm(id: ApplicationFormId) = Action.async {
-    applications.getOrCreateForForm(id).map {
+
+  //TODO:- Need to check user is Authenticated and Authorised before access the methds - to be done using Shibboleth??
+  def showOrCreateForForm(id: ApplicationFormId) = Action.async { request =>
+    val userId = request.session.get("username").getOrElse("Unauthorised User")
+
+    applications.getOrCreateForForm(id, UserId(userId)).map {
       case Some(app) =>
         app.personalReference.map { _ => redirectToOverview(app.id) }
           .getOrElse(Redirect(controllers.routes.ApplicationController.editPersonalRef(app.id)))
@@ -144,9 +148,8 @@ class ApplicationController @Inject()(
 
     if (sectionErrors.isEmpty) {
       val emailto = Config.config.business.emailto
-      //val emailto = "experiencederic@university.ac.uk"
       val dtf = DateTimeFormat.forPattern("HH:mm:ss")
-      val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZOne Europe/London
+      val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZone Europe/London
       actionHandler.doSubmit(id).map {
         case Some(e) =>
           Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))

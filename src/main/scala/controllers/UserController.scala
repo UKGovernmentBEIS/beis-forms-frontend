@@ -54,7 +54,10 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
   )
 
   def check(username: String, password: String) = {
-    (username == "applicant" && password == "1234") ||
+    (username == "applicant1" && password == "1234") ||
+    (username == "applicant2" && password == "1234") ||
+    (username == "applicant3" && password == "1234") ||
+    (username == "applicant4" && password == "1234") ||
     (username == "portfoliomanager" && password == "1234")
   }
 
@@ -70,6 +73,7 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
       },
       user=> {
 
+        //ACTIVITI implemetation code - please dont delete
         // Set-up an H2 database.
         /*Class.forName("org.h2.Driver")
         //val jdbcUrl = "jdbc:h2:activiti"
@@ -95,8 +99,9 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
           createProcessDefinitionQuery().list();
 
         start(2401, processEngine)
-*/
- /*      val pdl1:util.List[ProcessDefinition] = processEngine.engine.getRepositoryService().
+        */
+         /*
+         val pdl1:util.List[ProcessDefinition] = processEngine.engine.getRepositoryService().
          createProcessDefinitionQuery().list();
 
         val utl:util.List[Task] = processEngine.engine.getTaskService().createTaskQuery().
@@ -114,9 +119,10 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
         println("=========atl:-" + atl.size())
         println("=========atl:-" + atl.toString())
 
-*/
-        if(user.name.equals("applicant"))
-        Redirect(routes.OpportunityController.showOpportunities()).withSession(Security.username -> user.name)
+        */
+        //TODO:- Here the Roles come into place and Users belong to Group or Role
+        if(user.name.equals("applicant1") || user.name.equals("applicant2") || user.name.equals("applicant3") || user.name.equals("applicant4"))
+        Redirect(routes.DashBoardController.dashBoard()).withSession(Security.username -> user.name)
         else if(user.name.equals("portfoliomanager"))
           Redirect(manage.routes.OpportunityController.showNewOpportunityForm()).withSession(Security.username -> user.name)
         else

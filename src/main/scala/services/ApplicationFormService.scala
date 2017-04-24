@@ -29,6 +29,9 @@ class ApplicationFormURLs(baseUrl: String) {
 
   def application(applicationFormId: ApplicationFormId) =
     s"$baseUrl/application_form/${applicationFormId.id}/application"
+
+  def applicationCreate(applicationFormId: ApplicationFormId) =
+    s"$baseUrl/application_form/${applicationFormId.id}/applicationcreate"
 }
 
 import scala.concurrent.{ExecutionContext, Future}

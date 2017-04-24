@@ -43,6 +43,7 @@ class OpportunityController @Inject()(
   }
 
   def showOpportunitySection(id: OpportunityId, sectionNum: OppSectionNumber) = OppSectionAction(id, sectionNum).async { request =>
+
     appForms.byOpportunityId(id).map {
       case Some(appForm) => Ok(views.html.showOpportunity(appForm, request.opportunity, request.section))
       case None => NotFound

@@ -39,8 +39,10 @@ GET         /application/:id/section/:num/item/:itemNum/delete        controller
 GET         /application/:id/section/:num/item/:itemNum/edit          controllers.CostController.editItem(id:ApplicationId, num: AppSectionNumber, itemNum: Int)
 #POST        /application/upload/uploadFile/:id                       controllers.ApplicationController.uploadFile(id: ApplicationId)
 GET         /application/:id/section/:num/add-file-item               controllers.ApplicationController.addFileItem(id:ApplicationId, num: AppSectionNumber)
-#POST        /application/:id/section/:num/file-item                   controllers.ApplicationController.createFileItem(id:ApplicationId, num: AppSectionNumber)
+#POST        /application/:id/section/:num/file-item                  controllers.ApplicationController.createFileItem(id:ApplicationId, num: AppSectionNumber)
 GET         /application/:id/section/:num/item/:itemNum/filedelete    controllers.ApplicationController.deleteFileItem(id:ApplicationId, num: AppSectionNumber, itemNum: Int)
+
+GET         /dashboard                                                controllers.DashBoardController.dashBoard
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)
@@ -59,6 +61,7 @@ GET         /manage/opportunity/:id/deadlines/preview                 controller
 
 GET         /manage/opportunity/:id/title                             controllers.manage.TitleController.view(id:OpportunityId)
 POST        /manage/opportunity/:id/title                             controllers.manage.TitleController.save(id: OpportunityId)
+GET         /manage/opportunity/:id/title/edit                        controllers.manage.TitleController.edit(id: OpportunityId)
 GET         /manage/opportunity/:id/title/edit                        controllers.manage.TitleController.edit(id: OpportunityId)
 GET         /manage/opportunity/:id/title/preview                     controllers.manage.TitleController.preview(id: OpportunityId)
 

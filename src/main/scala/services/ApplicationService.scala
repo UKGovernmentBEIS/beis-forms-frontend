@@ -88,7 +88,8 @@ class ApplicationURLs(baseUrl: String) {
   def fileitems(id: ApplicationId, sectionNumber: AppSectionNumber) =
     s"$baseUrl/application/${id.id}/section/${sectionNumber.num}/fileitems"
 
-
+  def applications =
+    s"$baseUrl/applications"
 
   def uploadFile() =
     s"$baseUrl/application/uploadfile"
@@ -98,6 +99,7 @@ class ApplicationURLs(baseUrl: String) {
 
 class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
   extends ApplicationOps with RestService {
+  //TODO remove these comments
   //implicit val fileuploadItemF = Json.format[FileUploadItem]
   //implicit val fileListF = Json.format[FileList]
   //implicit val multipartFormDataReads = Json.format[play.api.mvc.MultipartFormData.FilePart[play.api.libs.Files.TemporaryFile]]
@@ -141,10 +143,10 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     val item = (doc \ "item").toOption.flatMap(_.validate[JsObject].asOpt).getOrElse(JsObject(Seq()))
     item \ "itemNumber" match {
       case JsDefined(JsNumber(itemNumber)) => {
-         put(urls.item(id, sectionNumber, itemNumber.toInt), item).map(_ => List())
+        put(urls.item(id, sectionNumber, itemNumber.toInt), item).map(_ => List())
       }
       case _ => {
-         post(urls.items(id, sectionNumber), item).map(_ => List())
+        post(urls.items(id, sectionNumber), item).map(_ => List())
       }
     }
   }
@@ -166,8 +168,19 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def getSections(id: ApplicationId): Future[Seq[ApplicationSection]] =
     getMany[ApplicationSection](urls.sections(id))
 
-  override def getOrCreateForForm(applicationFormId: ApplicationFormId): Future[Option[Application]] =
-    getOpt[Application](appFormUrls.application(applicationFormId))
+  override def getOrCreateForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
+    //getOpt[Application](appFormUrls.application(applicationFormId))
+    getWithHeaderUpdate[Application, String](appFormUrls.application(applicationFormId), userId.id)
+  }
+
+
+//  override def getForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
+//    getWithHeaderUpdate[Application, String](appFormUrls.application(applicationFormId), userId.id)
+//  }
+//
+//  override def createForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
+//    getWithHeaderUpdate[Application, String](appFormUrls.applicationCreate(applicationFormId), userId.id)
+//  }
 
   override def overview(id: ApplicationId): Future[Option[ApplicationOverview]] =
     getOpt[ApplicationOverview](urls.application(id))
@@ -193,6 +206,12 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def updatePersonalReference(id: ApplicationId, reference: String) =
     post(urls.personalRef(id), reference)
 
+  override def getApplicationsByUserId(userId: UserId): Future[Seq[Application]] = {
+    getWithHeaderUpdate[Seq[Application], String](urls.applications, userId.id).flatMap(apps =>
+      Future.successful(apps.getOrElse(Seq())))
+  }
+
+  //TODO:- NOT USED remove this method
   override def uploadFile(fileName: String, fileType: String,  mf: MultipartFormData.FilePart[TemporaryFile]): Future[Unit] = {
 
     //play.api.mvc.MultipartFormData.FilePart[Source[ByteString, Any]]

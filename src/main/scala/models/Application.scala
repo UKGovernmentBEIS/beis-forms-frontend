@@ -26,6 +26,8 @@ import play.api.libs.json.JsObject
 
 case class ApplicationId(id: LongId)
 
+case class AppStatus(appStatus: String)
+
 case class ApplicationSectionId(id: LongId)
 
 case class AppSectionNumber(num: PosInt) {
@@ -47,7 +49,7 @@ object AppSectionNumber {
   }
 }
 
-case class Application(id: ApplicationId, applicationFormId: ApplicationFormId, personalReference: Option[NonEmptyString])
+case class Application(id: ApplicationId, applicationFormId: ApplicationFormId, personalReference: Option[NonEmptyString], userId: UserId, appStatus: AppStatus)
 
 case class ApplicationDetail(
                               id: ApplicationId,

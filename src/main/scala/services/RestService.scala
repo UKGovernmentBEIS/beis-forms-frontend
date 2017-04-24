@@ -33,7 +33,6 @@ trait RestService {
 
   def getOpt[A: Reads](url: String): Future[Option[A]] = {
     val request: WSRequest = ws.url(url)
-
     request.get.map { response =>
       response.status match {
         case 200 => response.json.validate[A] match {
@@ -97,6 +96,21 @@ trait RestService {
         }
         case 404 => None
         case _ => throw RestFailure("POST", request, response)
+      }
+    }
+  }
+
+  def getWithHeaderUpdate[A: Reads, B: Writes](url: String, body: B): Future[Option[A]] = {
+    val request:WSRequest = ws.url(url)
+    val requestWithUserHeader:WSRequest  = request.withHeaders("userId" -> body.toString)
+    requestWithUserHeader.get.map { response =>
+      response.status match {
+        case 200 => response.json.validate[A] match {
+          case JsSuccess(a, _) =>  Some(a)
+          case JsError(errs) => throw JsonParseException("GET", request, response, errs)
+        }
+        case 404 => None
+        case _ => throw RestFailure("GET", request, response)
       }
     }
   }
