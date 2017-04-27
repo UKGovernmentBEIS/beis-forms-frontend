@@ -12,6 +12,7 @@
 
 @main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.dashBoard().url)), displayUserName=Some("Experienced Eric")) {
     <!-- main content -->
+
     <div class="grid-row">
         <div class="column-two-thirds">
             <div>
@@ -75,7 +76,11 @@
                         </tbody>
                     </table>
                     <p class="rifs-form-buttons">
-                        <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS">
+                        @app.appStatus.appStatus match {
+                        case "Submitted" => { <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS" disabled> }
+                        case _ => { <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS"> }
+                        }
+
                         <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(app.id)" class="flat nobreak">
                             Preview application</a>
                     </p>

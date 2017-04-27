@@ -1,6 +1,7 @@
 @(apprefno: Long, emailto: String, submittime: String)
 
-@main(s"Application submitted - BEIS", displayUserName=Some("Experienced Eric")) {
+@main(s"Application submitted - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.dashBoard().url)), displayUserName=Some("Experienced Eric")) {
+
 <!-- main content -->
     <div>
         <div class="rifs-confirmation-container" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">

@@ -21,15 +21,17 @@ import javax.inject.Inject
 
 import eu.timepit.refined.auto._
 import actions.{OppSectionAction, OpportunityAction}
-import models.{AppSectionNumber, OppSectionNumber, OpportunityId}
+import models.{AppSectionNumber, OppSectionNumber, OpportunityId, UserId}
+import play.api.mvc.Results.NotFound
 import play.api.mvc.{Action, Controller}
-import services.{ApplicationFormOps, OpportunityOps}
+import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class OpportunityController @Inject()(
                                        opportunities: OpportunityOps,
                                        appForms: ApplicationFormOps,
+                                       apps: ApplicationOps,
                                        OpportunityAction: OpportunityAction,
                                        OppSectionAction: OppSectionAction
                                      )(implicit ec: ExecutionContext) extends Controller {
@@ -43,11 +45,16 @@ class OpportunityController @Inject()(
   }
 
   def showOpportunitySection(id: OpportunityId, sectionNum: OppSectionNumber) = OppSectionAction(id, sectionNum).async { request =>
-
-    appForms.byOpportunityId(id).map {
-      case Some(appForm) => Ok(views.html.showOpportunity(appForm, request.opportunity, request.section))
-      case None => NotFound
-    }
+    val userId = request.session.get("username").getOrElse("Unauthorised User")
+    //TODO:- need to merge these 2 Database calls to one
+    for(
+      appForm <- appForms.byOpportunityId(id).map{
+        case Some(af) => af
+      };
+      app <- apps.byFormId(appForm.id, UserId(userId))
+    ) yield (
+      Ok(views.html.showOpportunity(appForm, app, request.opportunity, request.section))
+      )
   }
 
   def showGuidancePage(id: OpportunityId) = Action {

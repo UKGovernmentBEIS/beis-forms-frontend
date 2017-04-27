@@ -51,10 +51,19 @@ class ApplicationController @Inject()(
 
 
   //TODO:- Need to check user is Authenticated and Authorised before access the methds - to be done using Shibboleth??
-  def showOrCreateForForm(id: ApplicationFormId) = Action.async { request =>
+  def showForForm(id: ApplicationFormId) = Action.async { request =>
     val userId = request.session.get("username").getOrElse("Unauthorised User")
+    applications.byFormId(id, UserId(userId)).map {
+      case Some(app) =>
+        app.personalReference.map { _ => redirectToOverview(app.id) }
+          .getOrElse(Redirect(controllers.routes.ApplicationController.editPersonalRef(app.id)))
+      case None => NotFound
+    }
+  }
 
-    applications.getOrCreateForForm(id, UserId(userId)).map {
+  def createForForm(id: ApplicationFormId) = Action.async { request =>
+    val userId = request.session.get("username").getOrElse("Unauthorised User")
+    applications.createForForm(id, UserId(userId)).map {
       case Some(app) =>
         app.personalReference.map { _ => redirectToOverview(app.id) }
           .getOrElse(Redirect(controllers.routes.ApplicationController.editPersonalRef(app.id)))

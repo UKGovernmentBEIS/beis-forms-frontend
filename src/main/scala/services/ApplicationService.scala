@@ -168,19 +168,19 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def getSections(id: ApplicationId): Future[Seq[ApplicationSection]] =
     getMany[ApplicationSection](urls.sections(id))
 
-  override def getOrCreateForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
-    //getOpt[Application](appFormUrls.application(applicationFormId))
+//  override def getOrCreateForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
+//    //getOpt[Application](appFormUrls.application(applicationFormId))
+//    getWithHeaderUpdate[Application, String](appFormUrls.application(applicationFormId), userId.id)
+//  }
+
+
+  override def byFormId(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
     getWithHeaderUpdate[Application, String](appFormUrls.application(applicationFormId), userId.id)
   }
 
-
-//  override def getForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
-//    getWithHeaderUpdate[Application, String](appFormUrls.application(applicationFormId), userId.id)
-//  }
-//
-//  override def createForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
-//    getWithHeaderUpdate[Application, String](appFormUrls.applicationCreate(applicationFormId), userId.id)
-//  }
+  override def createForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
+    getWithHeaderUpdate[Application, String](appFormUrls.applicationCreate(applicationFormId), userId.id)
+  }
 
   override def overview(id: ApplicationId): Future[Option[ApplicationOverview]] =
     getOpt[ApplicationOverview](urls.application(id))

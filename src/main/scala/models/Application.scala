@@ -54,6 +54,7 @@ case class Application(id: ApplicationId, applicationFormId: ApplicationFormId, 
 case class ApplicationDetail(
                               id: ApplicationId,
                               personalReference: Option[NonEmptyString],
+                              appStatus: AppStatus,
                               sectionCount: NonNegativeInt,
                               completedSectionCount: NonNegativeInt,
                               opportunity: OpportunitySummary,

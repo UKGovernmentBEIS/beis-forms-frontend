@@ -17,7 +17,8 @@ GET         /opportunities/guidance/:opportunityId                    controller
 GET         /opportunity/:opportunityId                               controllers.OpportunityController.showOpportunity(opportunityId:OpportunityId, section:Option[OppSectionNumber])
 GET         /opportunity/:id/section/:num                             controllers.OpportunityController.showOpportunitySection(id:OpportunityId, num:OppSectionNumber)
 
-GET         /application_form/:id/apply                               controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
+#GET         /application_form/:id/apply                                controllers.ApplicationController.showOrCreateForForm(id: ApplicationFormId)
+GET         /application_form/:id/apply                               controllers.ApplicationController.createForForm(id: ApplicationFormId)
 
 GET         /application/:id                                          controllers.ApplicationController.show(id: ApplicationId)
 POST        /application/:id                                          controllers.ApplicationController.submit(id: ApplicationId)

@@ -1,4 +1,4 @@
-@(appForm: ApplicationForm, opportunity: Opportunity, section: OpportunityDescriptionSection)
+@(appForm: ApplicationForm, app: Option[Application], opportunity: Opportunity, section: OpportunityDescriptionSection)
 
 @import eu.timepit.refined.auto._
 
@@ -36,7 +36,7 @@
 @main(s"Opportunity: ${opportunity.title} - BEIS", backLink =
         Some(BackLink("Return to opportunity list", controllers.routes.OpportunityController.showOpportunities().url)), displayUserName = Some("Experienced Eric")) {
 
-    <div class="grid-row">
+ <div class="grid-row">
         <div class="column-two-thirds">
 
             <header class="page-header">
@@ -85,9 +85,15 @@
                     </div>
                     <div class="column-full rifs-form-buttons">
                         <p>
-                            <a href="@controllers.routes.ApplicationController.showOrCreateForForm(appForm.id)"
-                            class="button">
-                                Apply now</a>
+                            @app match {
+                                case Some(a) => {
+                                    @a.personalReference match {
+                                        case Some(ap) => { <a href="@controllers.routes.ApplicationController.show(a.id)" class="button"> View Application</a> }
+                                        case None => { <a href="@controllers.routes.ApplicationController.editPersonalRef(a.id)" class="button"> View Application</a> }
+                                    }
+                                }
+                                case None => { <a href="@controllers.routes.ApplicationController.createForForm(appForm.id)" class="button"> Apply Now</a> }
+                            }
                         </p>
                     </div>
                 </aside>
@@ -107,9 +113,15 @@
 
                     <div class="rifs-form-buttons">
                         <p>
-                            <a href="@controllers.routes.ApplicationController.showOrCreateForForm(appForm.id)"
-                            class="button"
-                            >Apply now</a>
+                            @app match {
+                                case Some(a) => {
+                                    @a.personalReference match {
+                                        case Some(ap) => { <a href="@controllers.routes.ApplicationController.show(a.id)" class="button"> View Application</a> }
+                                        case None => { <a href="@controllers.routes.ApplicationController.editPersonalRef(a.id)" class="button"> View Application</a> }
+                                    }
+                                }
+                                case None => { <a href="@controllers.routes.ApplicationController.createForForm(appForm.id)" class="button"> Apply Now</a> }
+                            }
                         </p>
                     </div>
 

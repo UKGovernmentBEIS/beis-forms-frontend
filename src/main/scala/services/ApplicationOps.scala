@@ -31,7 +31,11 @@ trait ApplicationOps {
 
   def byId(id: ApplicationId): Future[Option[Application]]
 
-  def getOrCreateForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]]
+ // def getOrCreateForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]]
+
+  def byFormId(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]]
+
+  def createForForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]]
 
   def overview(id: ApplicationId): Future[Option[ApplicationOverview]]
 

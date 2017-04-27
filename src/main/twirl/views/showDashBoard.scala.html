@@ -16,10 +16,13 @@ os: Seq[Opportunity]
 
         <table class="spacious">
             <tr>
-                <th role="presentation">Opportunity title</th>
+                <th role="presentation">Opportunity title</th> <th role="presentation">Value</th>
             </tr>
             @for((o,i) <- os.zipWithIndex) {
-            <tr><td>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></td></tr>
+            <tr>
+                <td>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></td>
+                <td>@o.value.amount &pound;</td>
+            </tr>
             }
         </table>
     </div>

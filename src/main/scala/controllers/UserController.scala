@@ -32,6 +32,7 @@ import play.api.mvc.{Action, Controller, MultipartFormData, Result}
 import play.api.mvc.Security
 import org.activiti.engine.{ProcessEngine, ProcessEngines}
 import org.h2.jdbcx.JdbcDataSource
+import scala.concurrent.{ExecutionContext, Future}
 
 /********************************************************************************
   This file is for temporary Login till any Security component is deployed.
@@ -52,6 +53,7 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
       case loginForm => check(loginForm.name, loginForm.password)
     })
   )
+
 
   def check(username: String, password: String) = {
     (username == "applicant1" && password == "1234") ||
