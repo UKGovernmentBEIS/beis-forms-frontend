@@ -29,30 +29,41 @@ import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.json._
-import play.api.mvc.{Action, Controller, MultipartFormData, Result}
-import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
+import play.api.mvc._
+import services.{AWSOps, ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 import java.io.File
+import java.net.URL
+
+import akka.stream.scaladsl.FileIO
+import com.amazonaws.services.s3.model.S3ObjectInputStream
+import org.apache.commons.io.{FileUtils, FilenameUtils, IOUtils}
+import play.api.http.HttpEntity
+import play.api.mvc.Results.{Ok, Redirect}
+
+import scala.util.Success
 
 class ApplicationController @Inject()(
                                        actionHandler: ActionHandler,
                                        applications: ApplicationOps,
                                        forms: ApplicationFormOps,
                                        opps: OpportunityOps,
+                                       awsS3: AWSOps,
                                        AppDetailAction: AppDetailAction,
                                        AppSectionAction: AppSectionAction
                                      )(implicit ec: ExecutionContext)
   extends Controller with ApplicationResults {
 
   implicit val fileuploadReads = Json.reads[FileUploadItem]
-  implicit val fileuploadItemF = Json.format[FileUploadItem]
+    implicit val fileuploadItemF = Json.format[FileUploadItem]
   implicit val fileListReads = Json.reads[FileList]
+  //implicit val urlF = Json.writes[URL]
 
 
   //TODO:- Need to check user is Authenticated and Authorised before access the methds - to be done using Shibboleth??
   def showForForm(id: ApplicationFormId) = Action.async { request =>
-    val userId = request.session.get("username").getOrElse("Unauthorised User")
+    implicit val userId = request.session.get("username").getOrElse("Unauthorised User")
     applications.byFormId(id, UserId(userId)).map {
       case Some(app) =>
         app.personalReference.map { _ => redirectToOverview(app.id) }
@@ -124,6 +135,7 @@ class ApplicationController @Inject()(
 
   def postSection(id: ApplicationId, sectionNumber: AppSectionNumber) = AppSectionAction(id, sectionNumber).async(JsonForm.fileuploadparser) {
     implicit request =>
+      implicit val userId = request.session.get("username").getOrElse("Unauthorised User")
 
       request.body.action match {
 
@@ -134,9 +146,10 @@ class ApplicationController @Inject()(
           actionHandler.doSave(request.appSection, request.body.values)
         }
         case FileUpload => {
-          request.body.mf.file("file") match {
-            case Some(file) =>
-              uploadFile(id, sectionNumber, request.appSection, request.body.values, file)
+          request.body.mf match {
+            case Some(file) =>{
+               uploadFileAWSS3(id, sectionNumber, request.appSection, request.body.values, file, userId)
+            }
             case None =>
               Future.successful(redirectToOverview(id))
           }
@@ -206,27 +219,79 @@ class ApplicationController @Inject()(
 
   }
 
-  def uploadFile(id: ApplicationId,  sectionNumber: AppSectionNumber, appSection: ApplicationSectionDetail , fieldValues: JsObject,
-                 mf: MultipartFormData.FilePart[TemporaryFile]) :Future[Result] = {
-      import java.io.File
-      val filename = mf.filename
-      val contentType = mf.contentType
+  def uploadFileAWSS3(id: ApplicationId,  sectionNumber: AppSectionNumber, appSection: ApplicationSectionDetail , fieldValues: JsObject,
+                 f: File, userId : String) :Future[Result] = {
 
-      /* File Upload */
-      val fileUploadItem:FileUploadItem = FileUploadItem(filename)
-      val fileuploaddirectory = Config.config.file.fileuploaddirectory
+    val filename  = fieldValues.fields.head._2.toString().replaceAll("^\"|\"$", "")
+    val extension = FilenameUtils.getExtension(filename)
+    /* File Upload */
+    val fileUploadItem:FileUploadItem = FileUploadItem(filename)
 
-      applications.saveFileItem(id, sectionNumber, JsObject(Seq("item" -> Json.toJson(fileUploadItem)))).flatMap {
+    /** Save file metadata in Database and Physical file in AWS S3 call **/
+    applications.saveFileItem(id, sectionNumber, JsObject(Seq("item" -> Json.toJson(fileUploadItem)))).flatMap {
       case itemnumber => {
-        mf.ref.moveTo(new File(s"$fileuploaddirectory/$itemnumber"))
-        Future.successful(redirectToSectionForm(id, sectionNumber))
+        /** AWS S3 call to store files on AWS S3 **/
+        awsS3.upload(ResourceKey( itemnumber + "." + extension), f).flatMap{
+            case Nil =>  Future.successful(redirectToSectionForm(id, sectionNumber))
+            case errs => Future.successful(showFileItemForm(appSection, null, errs))
+        }
       }
      }
-   }
+  }
 
-  def deleteFileItem(applicationId: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int) = Action.async {
+  /** This method
+   1. Checks the user authorisation for ASW S3 access
+   2. Download the AWS S3 file to a temp location on PAAS server
+   3. Create a File objectwith the file.
+   3. Out put the file to User Browser to download
+  **/
+
+  def downloadFile(id: ApplicationId,  sectionNumber: AppSectionNumber, key: ResourceKey) = Action { implicit request =>
+    val file = awsS3.download(key)
+    val fileTmp = "attachment; filename=" + key.key
+    val filedownloaddirectory = Config.config.file.filedownloaddirectory
+    Ok.sendFile(new File(filedownloaddirectory + key.key), inline=true).withHeaders(CACHE_CONTROL->"max-age=3600",
+      CONTENT_DISPOSITION->fileTmp, CONTENT_TYPE->"application/x-download")
+  }
+
+  /** This method
+  * 1. Checks the user authorisation for ASW S3 access
+  * 2. Create a preSigned URL to be accessed by thers (for public consumption)
+  * 3. Out put to User Browser to download
+  **/
+
+  def downloadFileDirect(id: ApplicationId,  sectionNumber: AppSectionNumber, key: ResourceKey) = AppSectionAction(id, sectionNumber).async { request =>
+    val preSignedURL = awsS3.downloadDirect(key)
+     preSignedURL.flatMap {
+      case url => Future.successful(Redirect(url.toString))
+      //TODO:- This is error case:- need to update method to add error message 'Error in downloading document.... Please try again'
+      case _ => Future.successful(redirectToSectionForm(id, sectionNumber))
+    }
+  }
+
+  /** TODO:- Not Used ** To Be Deleted**/
+  def uploadFileToLocalDirectory(id: ApplicationId,  sectionNumber: AppSectionNumber, appSection: ApplicationSectionDetail , fieldValues: JsObject,
+                 mf: MultipartFormData.FilePart[TemporaryFile], userId : String) :Future[Result] = {
+    import java.io.File
+    val filename = mf.filename
+    val contentType = mf.contentType
+    /* File Upload */
+    val fileUploadItem:FileUploadItem = FileUploadItem(filename)
+    val fileuploaddirectory = Config.config.file.fileuploaddirectory
+
+    /** Save file metadata in Database and Physical file in AWS S3 call **/
+    applications.saveFileItem(id, sectionNumber, JsObject(Seq("item" -> Json.toJson(fileUploadItem)))).flatMap {
+      case itemnumber => {
+        val file:File = new File(s"$fileuploaddirectory/$itemnumber")
+        mf.ref.moveTo(file)
+        Future.successful(redirectToSectionForm(id, sectionNumber))
+      }
+    }
+  }
+
+  def deleteFileItem(applicationId: ApplicationId, sectionNumber: AppSectionNumber, itemNumber: Int, ext: String) = Action.async {
     applications.deleteItem(applicationId, sectionNumber, itemNumber).flatMap { _ =>
-      deleteFileFromFolder(itemNumber)
+      deleteFileFromAWSS3(itemNumber.toString + ext)
       // Check if we deleted the last item in the list and, if so, delete the section so
       // it will go back to the Not Started state.
       applications.getSection(applicationId, sectionNumber).flatMap {
@@ -239,34 +304,22 @@ class ApplicationController @Inject()(
     }
   }
 
+  def deleteFileFromAWSS3(itemNumber: String) ={
+    val file = awsS3.delete(ResourceKey(itemNumber))
+  }
+
   implicit class FileMonads(f: java.io.File) {
     def check = if (f.exists) Some(f) else None
     def remove = if (f.delete()) Some(f) else None
   }
 
-  def deleteFileFromFolder(itemNumber: Int) ={
+  def deleteFileFromLocalFolder(itemNumber: Int) ={
     val filepath = Config.config.file.fileuploaddirectory + "/"  + itemNumber
-      println("Deleting File ........" + filepath)
+    println("Deleting File ........" + filepath)
     for {
       foundFile <- new File(filepath).check
       deletedFile <- foundFile.remove
     } yield deletedFile
-
   }
-
-  /*def uploadFile_b(id: ApplicationId) = Action(parse.multipartFormData) { request =>
-    request.body.dataParts.map{ xx =>
-      print("**********" + xx.toString())
-    }
-    request.body.file("file").map { file =>
-      import java.io.File
-      val filename = file.filename
-      val contentType = file.contentType
-      file.ref.moveTo(new File(s"/Users/venkatamutyala/test/$filename"))
-      Redirect(controllers.routes.ApplicationController.show(id))
-    }.getOrElse {
-      Ok("File NOT uploaded")
-    }
-  }*/
 
 }

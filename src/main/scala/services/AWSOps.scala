@@ -15,18 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package config
+package services
 
-case class BusinessConfig(baseUrl: String, emailto: String, addressSearch: String)
-case class FileConfig(fileuploaddirectory: String, filedownloaddirectory: String)
-case class AWSConfig(accesskey: String, secretkey: String, region: String, bucket: String)
+import java.net.URL
+import com.google.inject.ImplementedBy
+import java.io.File
 
-case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig, file: FileConfig, aws: AWSConfig)
+import controllers.FieldCheckHelpers.FieldErrors
+import models._
 
-object Config {
+import scala.concurrent.Future
 
-  import pureconfig._
-
-  lazy val config: Config = loadConfig[Config].get
-
+@ImplementedBy(classOf[AWSS3Service])
+trait AWSOps {
+  def upload(key: ResourceKey, file : File):  Future[FieldErrors]
+  def download(key: ResourceKey): Future[FieldErrors]
+  def downloadDirect(key: ResourceKey): Future[URL]
+  def delete(key: ResourceKey):  Future[FieldErrors]
+  def listBuckets()
 }
+
+

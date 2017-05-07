@@ -15,18 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package config
+package models
 
-case class BusinessConfig(baseUrl: String, emailto: String, addressSearch: String)
-case class FileConfig(fileuploaddirectory: String, filedownloaddirectory: String)
-case class AWSConfig(accesskey: String, secretkey: String, region: String, bucket: String)
-
-case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig, file: FileConfig, aws: AWSConfig)
-
-object Config {
-
-  import pureconfig._
-
-  lazy val config: Config = loadConfig[Config].get
-
-}
+/**
+  * Created by venkatamutyala on 02/05/2017.
+  */
+case class AWS()
+case class ResourceKey(key : String)

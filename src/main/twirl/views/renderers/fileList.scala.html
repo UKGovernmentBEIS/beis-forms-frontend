@@ -25,6 +25,13 @@
     routes.Assets.at("images/files/" + f)
 }
 
+@fileextension(f: String) = @{
+f.substring(f.lastIndexOf("."), f.length)
+}
+
+@errs.map { e =>
+<span class="error-message" role="alert">fsafaf</span>
+}
 <table class="spacious" border="0">
 
     <thead>
@@ -37,15 +44,16 @@
         @fileUploadItems.map { fileUploadItem =>
             <tr>
                 <td width="10%">
-                  <a href="@filename(fileUploadItem.itemNumber.get)">
-                    <img src="@routes.Assets.at("images/" +  filetype(fileUploadItem.supportingDocuments) + "_icon.png")" width="36" height="32" alt="" style="visibility: visible">
+                   <!-- <a href="@filename(fileUploadItem.itemNumber.get)"> -->
+                    <a href="@controllers.routes.ApplicationController.downloadFileDirect(app.id, app.formSection.sectionNumber, ResourceKey(fileUploadItem.itemNumber.get.toString() + fileextension(fileUploadItem.supportingDocuments)) )">
+                      <img src="@routes.Assets.at("images/" +  filetype(fileUploadItem.supportingDocuments) + "_icon.png")" width="36" height="32" alt="" style="visibility: visible">
                   </a>
 
                 </td>
                 <td>@fileUploadItem.supportingDocuments</td>
                 <td>
                     @fileUploadItem.itemNumber.map { num =>
-                    <a href="@controllers.routes.ApplicationController.deleteFileItem(app.id, app.formSection.sectionNumber, num)">
+                    <a href="@controllers.routes.ApplicationController.deleteFileItem(app.id, app.formSection.sectionNumber, num, fileextension(fileUploadItem.supportingDocuments))">
                     Delete</a></td>
                 }
             </tr>

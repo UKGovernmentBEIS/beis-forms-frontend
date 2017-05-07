@@ -20,17 +20,11 @@
                   action="@controllers.routes.ApplicationController.postSection(app.id, app.formSection.sectionNumber)"
                   novalidate="novalidate" enctype="multipart/form-data">
                 @if(errs.nonEmpty) {
-                <div class="error-summary" role="group" aria-labelledby="error-summary-heading" tabindex="-1">
-
-                    <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
-                        The information you entered is not valid
-                    </h1>
-
-                    <p>
-                        Please correct the problems indicated below.
-                    </p>
-                </div>
+                @errs.map { e =>
+                <span class="error-message" role="alert">@e.err</span>
                 }
+                }
+
                 @app.formSection.fields.map(_.renderFormInput(app.formSection.questionMap, answers, errs, hints))
 
                 <div class="rifs-form-buttons">

@@ -17,11 +17,12 @@
 
 package controllers
 
+import java.io.File
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.json.JsObject
 import play.api.mvc.{BodyParser, BodyParsers, MultipartFormData}
 
-case class JsonFormSubmit(mf: MultipartFormData[TemporaryFile], action: ButtonAction, values: JsObject)
+case class JsonFormSubmit(mf: Option[File] = None, action: ButtonAction, values: JsObject)
 
 object JsonForm {
 
@@ -44,15 +45,16 @@ object JsonForm {
     // Drop keys that start with '_' as these are "system" keys like the button name
     val jsonFormValues = formToJson(params.filterKeys(k => !k.startsWith("_")))
     val button: Option[ButtonAction] = decodeButton(params.keySet)
-    button.map(b => JsonFormSubmit(null,b, jsonFormValues)).getOrElse(sys.error("Could not find an action button on the form post"))
+    button.map(b => JsonFormSubmit(None, b, jsonFormValues)).getOrElse(sys.error("Could not find an action button on the form post"))
   }
 
   def fileuploadparser: BodyParser[JsonFormSubmit] = BodyParsers.parse.multipartFormData.map { params =>
     // Drop keys that start with '_' as these are "system" keys like the button name
-    val pm = params.dataParts
-    //request.body.dataParts.map
-    val jsonFormValues = formToJson(pm.filterKeys(k => !k.startsWith("_")))
-    val button: Option[ButtonAction] = decodeButton(pm.keySet)
-    button.map(b => JsonFormSubmit(params, b, jsonFormValues)).getOrElse(sys.error("Could not find an action button on the form post"))
+    val dp = params.dataParts
+    val fs = params.files
+    val jsonFormValues = formToJson(dp.filterKeys(k => !k.startsWith("_")))
+    val button: Option[ButtonAction] = decodeButton(dp.keySet)
+    button.map(b => JsonFormSubmit(
+      fs.map(_.ref.file).headOption, b, jsonFormValues)).getOrElse(sys.error("Could not find an action button on the form post"))
   }
 }

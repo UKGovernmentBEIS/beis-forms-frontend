@@ -1,6 +1,6 @@
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
-name := "rifs-frontend-play"
+name := "beis-frontend-play"
 
 startYear := Some(2016)
 
@@ -8,7 +8,7 @@ organization := "uk.gov.beis.digital"
 
 scalaVersion := "2.11.8"
 
-lazy val `rifs-frontend-play` = (project in file("."))
+lazy val `beis-frontend-play` = (project in file("."))
   .enablePlugins(PlayScala)
   .disablePlugins(PlayLayoutPlugin)
   .enablePlugins(GitVersioning)
@@ -41,6 +41,8 @@ javaOptions := Seq(
 // re-compiled on change in dev mode
 PlayKeys.playMonitoredFiles ++= (sourceDirectories in(Compile, TwirlKeys.compileTemplates)).value
 
+val `aws-java-version` = "1.11.104"
+
 libraryDependencies ++= Seq(
   ws,
   "joda-time" % "joda-time" % "2.9.6",
@@ -56,7 +58,10 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   "org.jsoup" % "jsoup" % "1.9.2" % Test,
   "org.activiti" % "activiti-engine" % "5.15",
-  "com.h2database" % "h2" % "1.3.175"
+  "com.h2database" % "h2" % "1.3.175",
+  "com.amazonaws" % "aws-java-sdk" % `aws-java-version`,
+  "commons-io" % "commons-io" % "2.4"
+
 )
 
 

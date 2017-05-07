@@ -41,7 +41,8 @@ GET         /application/:id/section/:num/item/:itemNum/edit          controller
 #POST        /application/upload/uploadFile/:id                       controllers.ApplicationController.uploadFile(id: ApplicationId)
 GET         /application/:id/section/:num/add-file-item               controllers.ApplicationController.addFileItem(id:ApplicationId, num: AppSectionNumber)
 #POST        /application/:id/section/:num/file-item                  controllers.ApplicationController.createFileItem(id:ApplicationId, num: AppSectionNumber)
-GET         /application/:id/section/:num/item/:itemNum/filedelete    controllers.ApplicationController.deleteFileItem(id:ApplicationId, num: AppSectionNumber, itemNum: Int)
+GET         /application/:id/section/:num/item/:item/ext/:ext/filedelete   controllers.ApplicationController.deleteFileItem(id:ApplicationId, num: AppSectionNumber, item: Int, ext: String)
+GET         /application/:id/section/:num/downloadfile/:key           controllers.ApplicationController.downloadFileDirect(id:ApplicationId, num: AppSectionNumber, key: ResourceKey)
 
 GET         /dashboard                                                controllers.DashBoardController.dashBoard
 
