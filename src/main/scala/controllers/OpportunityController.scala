@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 import eu.timepit.refined.auto._
 import actions.{OppSectionAction, OpportunityAction}
-import models.{AppSectionNumber, OppSectionNumber, OpportunityId, UserId}
+import models.{AppSectionNumber, OppSectionNumber, OpportunityId, UserId, Application}
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
@@ -47,14 +47,13 @@ class OpportunityController @Inject()(
   def showOpportunitySection(id: OpportunityId, sectionNum: OppSectionNumber) = OppSectionAction(id, sectionNum).async { request =>
     val userId = request.session.get("username").getOrElse("Unauthorised User")
     //TODO:- need to merge these 2 Database calls to one
-    for(
-      appForm <- appForms.byOpportunityId(id).map{
-        case Some(af) => af
-      };
-      app <- apps.byFormId(appForm.id, UserId(userId))
-    ) yield (
-      Ok(views.html.showOpportunity(appForm, app, request.opportunity, request.section))
-      )
+    appForms.byOpportunityId(id).flatMap {
+       case Some(appform) => apps.byFormId(appform.id, UserId(userId)).flatMap{
+            case app: Option[Application] => Future.successful(Ok(views.html.showOpportunity(appform, app, request.opportunity, request.section)))
+            // None => Future.successful(NotFound)
+       }
+       case None => Future.successful(NotFound)
+    }
   }
 
   def showGuidancePage(id: OpportunityId) = Action {

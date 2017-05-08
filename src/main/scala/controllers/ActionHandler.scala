@@ -92,6 +92,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         else Future.successful(redisplaySectionForm(app, fieldValues, errs))
 
       case SectionTypeCostList => Future.successful(redirectToPreview(app.id, app.sectionNumber))
+      case _ => Future.successful(NotFound)
     }
   }
 
@@ -106,6 +107,7 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
       // have already been saved against the item list, since these were created by the add-item
       // form.
       case SectionTypeCostList => app.section.map(_.answers).getOrElse(JsObject(Seq()))
+      case _ => JsObject(Seq())
     }
 
     val previewCheckErrs = check(answers, previewChecksFor(app.formSection))

@@ -44,11 +44,11 @@ class DashBoardController @Inject()(   applications: ApplicationOps,
     val userId = request.session.get("username").getOrElse("Unauthorised User")
     for(
         appsSeq <- applications.getApplicationsByUserId(UserId(userId)).map{
-        case apps => apps
+        case apps: Seq[Application] => apps
         case _ => Seq()
         };
         oppsSeq <- opps.getOpenOpportunitySummaries.map {
-        case ops => ops
+        case ops: Seq[Opportunity] => ops
         case _ => Seq()
         }
     )yield(

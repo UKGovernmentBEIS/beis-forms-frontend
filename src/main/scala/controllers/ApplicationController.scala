@@ -263,7 +263,7 @@ class ApplicationController @Inject()(
   def downloadFileDirect(id: ApplicationId,  sectionNumber: AppSectionNumber, key: ResourceKey) = AppSectionAction(id, sectionNumber).async { request =>
     val preSignedURL = awsS3.downloadDirect(key)
      preSignedURL.flatMap {
-      case url => Future.successful(Redirect(url.toString))
+      case url: URL => Future.successful(Redirect(url.toString))
       //TODO:- This is error case:- need to update method to add error message 'Error in downloading document.... Please try again'
       case _ => Future.successful(redirectToSectionForm(id, sectionNumber))
     }
