@@ -21,7 +21,7 @@ os: Seq[Opportunity]
             @for((o,i) <- os.zipWithIndex) {
             <tr>
                 <td>@{i+1}. <a href="/opportunity/@o.id.id">@o.title</a></td>
-                <td>@o.value.amount &pound;</td>
+                <td>&pound;@("%,.0f".format(o.value.amount))</td>
             </tr>
             }
         </table>
