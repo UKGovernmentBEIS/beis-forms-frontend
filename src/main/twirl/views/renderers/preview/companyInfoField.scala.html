@@ -2,5 +2,12 @@
 
 <div>
     <h3>@field.label</h3>
-    @answers.getOrElse(field.name, "").split("\n\n").filterNot(_ == "").map { p => <p class="text preview-text">@p</p> }
+    @answers.getOrElse("companyInfo.companyname", "Not Available").split("\n\n").filterNot(_ == "").map { p => <p class="text preview-text">@p</p> }
 </div>
+
+<div>
+    <h3>@field.label</h3>
+    @answers.getOrElse("companyInfo.companynumber", "Not Available").split("\n\n").filterNot(_ == "").map { p => <p class="text preview-text">@p</p> }
+</div>
+
+
