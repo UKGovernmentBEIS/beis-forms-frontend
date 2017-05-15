@@ -32,7 +32,7 @@ object CurrencyValidator {
   final val anyValue = apply()
 }
 
-class CurrencyValidator(minValue: Option[BigDecimal]) extends FieldValidator[Option[String], BigDecimal] {
+  class CurrencyValidator(minValue: Option[BigDecimal]) extends FieldValidator[Option[String], BigDecimal] {
   override def normalise(os: Option[String]): Option[String] = os.map(_.trim().replaceAll(",", ""))
 
   override def doValidation(path: String, value: Normalised[Option[String]]): ValidatedNel[FieldError, BigDecimal] = {

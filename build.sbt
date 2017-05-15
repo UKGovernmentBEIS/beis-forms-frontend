@@ -6,7 +6,8 @@ startYear := Some(2016)
 
 organization := "uk.gov.beis.digital"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
+crossScalaVersions := Seq("2.11.11", "2.12.2")
 
 lazy val `beis-frontend-play` = (project in file("."))
   .enablePlugins(PlayScala)
@@ -31,7 +32,7 @@ buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 buildInfoPackage := "rifs.frontend.buildinfo"
 buildInfoOptions ++= Seq(BuildInfoOption.ToJson, BuildInfoOption.BuildTime)
 
-PlayKeys.devSettings := Seq("play.server.http.port" -> "9000")
+PlayKeys.devSettings := Seq("play.server.http.port" -> "9001")
 javaOptions := Seq(
   "-Dconfig.file=src/main/resources/development.application.conf",
   "-Dlogger.file=src/main/resources/development.logger.xml"
@@ -42,6 +43,7 @@ javaOptions := Seq(
 PlayKeys.playMonitoredFiles ++= (sourceDirectories in(Compile, TwirlKeys.compileTemplates)).value
 
 val `aws-java-version` = "1.11.104"
+val akkaVersion = "2.4.18"
 
 libraryDependencies ++= Seq(
   ws,
@@ -60,8 +62,9 @@ libraryDependencies ++= Seq(
   "org.activiti" % "activiti-engine" % "5.15",
   "com.h2database" % "h2" % "1.3.175",
   "com.amazonaws" % "aws-java-sdk" % `aws-java-version`,
-  "commons-io" % "commons-io" % "2.4"
-
+  "io.findify" %% "s3mock" % "0.2.0" % "test",
+  "commons-io" % "commons-io" % "2.4",
+  "com.typesafe.akka" %% "akka-stream" % akkaVersion
 )
 
 

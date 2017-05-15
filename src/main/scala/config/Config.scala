@@ -20,8 +20,10 @@ package config
 case class BusinessConfig(baseUrl: String, emailto: String, addressSearch: String)
 case class FileConfig(fileuploaddirectory: String, filedownloaddirectory: String)
 case class AWSConfig(accesskey: String, secretkey: String, region: String, bucket: String)
+case class FieldValidation(telephone: Int, email: Int, companyname: Int)
 
-case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig, file: FileConfig, aws: AWSConfig)
+case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig,
+                  file: FileConfig, aws: AWSConfig, fieldvalidation: FieldValidation)
 
 object Config {
 

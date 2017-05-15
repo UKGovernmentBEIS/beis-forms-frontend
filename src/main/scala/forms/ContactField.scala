@@ -18,7 +18,7 @@
 package forms
 
 import controllers.{FieldCheck, FieldChecks, JsonHelpers}
-import forms.validation._
+import forms.validation.{ContactValidator, _}
 import models._
 import play.api.libs.json.{JsObject, Json}
 

@@ -105,6 +105,7 @@ class AWSS3Service @Inject()(implicit val ec: ExecutionContext)
     }
   }
 
+  /** This functionality is not implmented yet **/
   override def listBuckets():Unit= {
      val result1 = s3Client.listObjects(bucket)
      val objectSummaries:Seq[S3ObjectSummary] = result1.getObjectSummaries

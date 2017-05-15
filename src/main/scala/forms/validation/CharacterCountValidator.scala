@@ -21,38 +21,32 @@ import cats.data.ValidatedNel
 import cats.syntax.validated._
 import forms.validation.FieldValidator.Normalised
 
-case class WordCountValidator(maxWords: Int) extends FieldValidator[String, String] {
+case class CharacterCountValidator(maxChars: Int) extends FieldValidator[String, String] {
 
-  import WordCountValidator._
+  import CharacterCountValidator._
 
   override def normalise(s: String): String = s.trim()
 
   override def doValidation(path: String, s: Normalised[String]): ValidatedNel[FieldError, String] = {
   s match {
-      case n if n.split("\\s+").length > maxWords => FieldError(path, "Word limit exceeded").invalidNel
+      case n if n.length > maxChars => FieldError(path, "Character limit exceeded").invalidNel
       case n => n.validNel
     }
   }
 
   override def doHinting(path: String, s: Normalised[String]): List[FieldHint] = {
-    val wordCount = s.split("\\s+").filterNot(_ == "").length
-
-    val text = wordCount match {
-      case 0 => noWords(maxWords)
-      case _ if wordCount > maxWords => overLimit(wordCount - maxWords)
-      case _ => wordsRemaining(maxWords - wordCount)
+    val charCount:Int = s.length
+    val text = charCount match {
+      case 0 => noChars(maxChars)
+      case _ if charCount > maxChars => overLimit(charCount - maxChars)
+      case _  => ""
     }
 
-    List(FieldHint(path, text, Some("WordCount"), Some(s"""{\"maxWords\": $maxWords}""")))
+    List(FieldHint(path, text, Some("CharCount"), Some(s"""{\"maxWords\": $maxChars}""")))
   }
 }
 
-object WordCountValidator {
-  def ws(n: Int) = if (n == 1) "word" else "words"
-
-  def wordsRemaining(wordsLeft: Int) = s"Words remaining: $wordsLeft"
-
-  def overLimit(over: Int) = s"$over ${ws(over)} over limit"
-
-  def noWords(max: Int) = s"$max ${ws(max)} maximum"
+object CharacterCountValidator {
+  def overLimit(over: Int) = s"$over Characters over limit"
+  def noChars(max: Int) = s"$max Characters maximum"
 }

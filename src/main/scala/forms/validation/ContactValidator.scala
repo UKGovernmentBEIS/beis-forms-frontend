@@ -20,6 +20,7 @@ package forms.validation
 import cats.data.ValidatedNel
 import cats.syntax.cartesian._
 import cats.syntax.validated._
+import config.Config
 import forms.validation.FieldValidator.Normalised
 
 case class ContactValues(telephone: Option[String], email: Option[String], web: Option[String] = None, twitter: Option[String] = None)
@@ -27,11 +28,14 @@ case class ContactValues(telephone: Option[String], email: Option[String], web: 
 case class Contact(telephone: String, email: String, web: Option[String] = None, twitter: Option[String] = None)
 
 case object ContactValidator extends FieldValidator[ContactValues, Contact] {
-  val telephoneValidator = MandatoryValidator(Some("telephone")).andThen(WordCountValidator(200))
+  val telephonelength = Config.config.fieldvalidation.telephone
+  val emaillength = Config.config.fieldvalidation.email
+
+  val telephoneValidator = MandatoryValidator(Some("telephone")).andThen(CharacterCountValidator(telephonelength))
   //val emailValidator = CurrencyValidator.anyValue
-  val emailValidator = MandatoryValidator(Some("email")).andThen(WordCountValidator(200))
-  val webValidator = MandatoryValidator(Some("web")).andThen(WordCountValidator(200))
-  //val twitterValidator = MandatoryValidator(Some("twitter")).andThen(WordCountValidator(200))
+  val emailValidator = MandatoryValidator(Some("email")).andThen(CharacterCountValidator(emaillength))
+  val webValidator = MandatoryValidator(Some("web")).andThen(CharacterCountValidator(200))
+  //val twitterValidator = MandatoryValidator(Some("twitter")).andThen(CharacterCountValidator(200))
 
   override def doValidation(path: String, contactValues: Normalised[ContactValues]): ValidatedNel[FieldError, Contact] = {
     val telephoneV = telephoneValidator.validate(s"$path.telephone", contactValues.telephone)
@@ -42,23 +46,5 @@ case object ContactValidator extends FieldValidator[ContactValues, Contact] {
 
   override def doHinting(path: String, contactValues: Normalised[ContactValues]): List[FieldHint] = {
     emailValidator.hintText(s"$path.email", contactValues.email)
-  }
-}
-
-case class ContactSectionValidator(maxValue: BigDecimal) extends FieldValidator[CostList, List[CostItem]] {
-  val nonEmptyV = new FieldValidator[List[CostItem], List[CostItem]] {
-    override def doValidation(path: String, items: Normalised[List[CostItem]]): ValidatedNel[FieldError, List[CostItem]] =
-      if (items.isEmpty) FieldError(path, s"Must provide at least one item.").invalidNel
-      else items.validNel
-  }
-
-  val notTooCostlyV = new FieldValidator[List[CostItem], List[CostItem]] {
-    override def doValidation(path: String, items: Normalised[List[CostItem]]): ValidatedNel[FieldError, List[CostItem]] =
-      if (items.map(_.cost).sum > maxValue) FieldError(path, s"Total requested exceeds limit. Please check costs of items.").invalidNel
-      else items.validNel
-  }
-
-  override def doValidation(path: String, cvs: Normalised[CostList]): ValidatedNel[FieldError, List[CostItem]] = {
-    nonEmptyV.andThen(notTooCostlyV).validate("", cvs.items)
   }
 }

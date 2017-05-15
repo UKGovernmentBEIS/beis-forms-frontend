@@ -20,6 +20,7 @@ package forms.validation
 import cats.data.ValidatedNel
 import cats.syntax.cartesian._
 import cats.syntax.validated._
+import config.Config
 import forms.validation.FieldValidator.Normalised
 
 case class CompanyInfoValues(companyname: Option[String], companynumber: Option[String] = None)
@@ -27,8 +28,9 @@ case class CompanyInfoValues(companyname: Option[String], companynumber: Option[
 case class CompanyInfo(companyname: String, companynumber: Option[String] = None)
 
 case object CompanyInfoValidator extends FieldValidator[CompanyInfoValues, CompanyInfo] {
-  val companynameValidator = MandatoryValidator(Some("companyname")).andThen(WordCountValidator(200))
-  val companynumberValidator = MandatoryValidator(Some("companynumber")).andThen(WordCountValidator(200))
+  val companynamelength = Config.config.fieldvalidation.email
+  val companynameValidator = MandatoryValidator(Some("companyname")).andThen(CharacterCountValidator(companynamelength))
+  val companynumberValidator = MandatoryValidator(Some("companynumber")).andThen(CharacterCountValidator(200)) //not  used
 
   override def doValidation(path: String, companyInfoValues: Normalised[CompanyInfoValues]): ValidatedNel[FieldError, CompanyInfo] = {
     val companynameV = companynameValidator.validate(s"$path.companyname", companyInfoValues.companyname)
