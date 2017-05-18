@@ -20,18 +20,18 @@ package forms
 import controllers.{FieldCheck, FieldChecks, JsonHelpers}
 import forms.validation.{ContactValidator, _}
 import models._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json._
 
-case class ContactField(name: String) extends Field {
+case class ContactField(name: String, contactitems : Seq[TextField]) extends Field {
   implicit val contactReads = Json.reads[ContactValues]
-
-  val telephoneField = TextField(Some("Telephone"), s"$name.telephone", isNumeric = false, 20)
-  val emailField = TextField(Some("Email Id"), s"$name.email", isNumeric = false, 20)
-  val webField = TextField(Some("Web Address"), s"$name.web", isNumeric = false, 20)
-  val twitterField = TextField(Some("Twitter"), s"$name.twitter", isNumeric = false, 20)
+  val telephoneField = contactitems.filter(s => (s.name == "contactDetails.telephone")).head
+  val emailField = contactitems.filter(s => (s.name == "contactDetails.email")).head
+  val webField = contactitems.filter(s => (s.name == "contactDetails.web")).head
+  val twitterField = contactitems.filter(s => (s.name == "contactDetails.twitter")).head
 
   override def previewCheck: FieldCheck = FieldChecks.mandatoryCheck
-  override def check: FieldCheck = FieldChecks.fromValidator(ContactValidator)
+  //override def check: FieldCheck = FieldChecks.fromValidator(ContactValidator)
+  override def check: FieldCheck = FieldChecks.fromValidator(new ContactValidator(Seq(telephoneField, emailField, webField, twitterField)))
 
   override def renderPreview(questions: Map[String, Question], answers: JsObject) =
     views.html.renderers.preview.contactField(this, JsonHelpers.flatten(answers))
@@ -40,3 +40,6 @@ case class ContactField(name: String) extends Field {
     views.html.renderers.contactField(this, questions, JsonHelpers.flatten(answers), errs, hints)
   }
 }
+
+//TODO:- Ideally we need to convert above Seq[TextField] to ContactItems.. tobe done..
+case class ContactItems(contactitems: Seq[TextField])

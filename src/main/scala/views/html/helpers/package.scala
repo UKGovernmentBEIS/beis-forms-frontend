@@ -29,7 +29,7 @@ package object helpers {
     val constraints = appForm.sections.flatMap { s =>
       s.questions.flatMap { q =>
         s.fields.find(_.name == q.key).flatMap {
-          case TextField(_, _, _, wordCount) => Some(s"Word count: $wordCount")
+          case TextField(_, _, _, _, _, wordCount) => Some(s"Word count: $wordCount")
           case TextAreaField(_, _, wordCount) => Some(s"Word count: $wordCount")
           case AddressField(_, _, wordCount) => Some(s"Word count: $wordCount")
           case _ => None

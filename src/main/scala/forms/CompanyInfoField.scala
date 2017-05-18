@@ -28,8 +28,8 @@ case class CompanyInfoField(label: Option[String], name: String, maxWords: Int) 
   override def previewCheck: FieldCheck = FieldChecks.mandatoryCheck
   override def check: FieldCheck = FieldChecks.fromValidator(CompanyInfoValidator)
 
-  val companyNameField = TextField(Some("What is your Company Name"), s"$name.companyname", isNumeric = false, 20)
-  val companyNumberField = TextField(Some("What is your Company Number"), s"$name.companynumber", isNumeric = false, 20)
+  val companyNameField = TextField(Some("What is your Company Name"), s"$name.companyname", isEnabled = true, isMandatory = false, isNumeric = false, 20)
+  val companyNumberField = TextField(Some("What is your Company Number"), s"$name.companynumber", isEnabled = true, isMandatory = false, isNumeric = false, 20)
 
   override def renderPreview(questions: Map[String, Question], answers: JsObject) =
     views.html.renderers.preview.companyInfoField(this, JsonHelpers.flatten(answers))

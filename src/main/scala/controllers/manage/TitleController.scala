@@ -42,7 +42,7 @@ class TitleController @Inject()(
   override implicit def inReads: Reads[Option[String]] = OptionReads[String]
 
   override val fieldName: String = "title"
-  val field = TextField(None, name = fieldName, isNumeric = false, maxWords = 20)
+  val field = TextField(None, name = fieldName, isEnabled = true, isMandatory = false, isNumeric = false, maxWords = 200)
   val questions = Map(fieldName -> Question("What is your opportunity called ?"))
   override val validator = field.validator
 

@@ -21,30 +21,34 @@ import cats.data.ValidatedNel
 import cats.syntax.cartesian._
 import cats.syntax.validated._
 import config.Config
+import forms.TextField
 import forms.validation.FieldValidator.Normalised
 
 case class ContactValues(telephone: Option[String], email: Option[String], web: Option[String] = None, twitter: Option[String] = None)
 
-case class Contact(telephone: String, email: String, web: Option[String] = None, twitter: Option[String] = None)
+case class Contact(telephone: String, email: String, web: String, twitter: String)
 
-case object ContactValidator extends FieldValidator[ContactValues, Contact] {
-  val telephonelength = Config.config.fieldvalidation.telephone
-  val emaillength = Config.config.fieldvalidation.email
+ object ContactValidator  {
+  def apply(textfields : Seq[TextField]) = new ContactValidator(textfields)
+}
 
-  val telephoneValidator = MandatoryValidator(Some("telephone")).andThen(CharacterCountValidator(telephonelength))
-  //val emailValidator = CurrencyValidator.anyValue
-  val emailValidator = MandatoryValidator(Some("email")).andThen(CharacterCountValidator(emaillength))
-  val webValidator = MandatoryValidator(Some("web")).andThen(CharacterCountValidator(200))
-  //val twitterValidator = MandatoryValidator(Some("twitter")).andThen(CharacterCountValidator(200))
+ class ContactValidator(textfields : Seq[TextField]) extends FieldValidator[ContactValues, Contact]{
 
   override def doValidation(path: String, contactValues: Normalised[ContactValues]): ValidatedNel[FieldError, Contact] = {
-    val telephoneV = telephoneValidator.validate(s"$path.telephone", contactValues.telephone)
-    val emailV = emailValidator.validate(s"$path.email", contactValues.email)
-
-    (telephoneV |@| emailV).map(Contact.apply(_, _, None, None))
+  def createValidator(f : String) = {
+    val textfield = textfields.filter(t => t.name == s"$path.$f")
+    textfield.head.isMandatory match {
+      case true => MandatoryValidator(Some(f)).andThen(CharacterCountValidator(textfield.head.maxWords))
+      case false => NonMandatoryValidator(None)
+    }
   }
 
-  override def doHinting(path: String, contactValues: Normalised[ContactValues]): List[FieldHint] = {
-    emailValidator.hintText(s"$path.email", contactValues.email)
+  val telephoneValidator = createValidator("telephone").validate(s"$path.telephone", contactValues.telephone)
+  val emailValidator = createValidator("email").validate(s"$path.email", contactValues.email)
+  val webValidator = createValidator("web").validate(s"$path.web", contactValues.web)
+  val twitterValidator = createValidator("twitter").validate(s"$path.twitter", contactValues.twitter)
+
+  (telephoneValidator |@| emailValidator |@| webValidator |@| twitterValidator).map(Contact.apply(_, _, _, _))
   }
+
 }

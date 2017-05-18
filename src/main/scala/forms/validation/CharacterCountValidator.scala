@@ -29,7 +29,7 @@ case class CharacterCountValidator(maxChars: Int) extends FieldValidator[String,
 
   override def doValidation(path: String, s: Normalised[String]): ValidatedNel[FieldError, String] = {
   s match {
-      case n if n.length > maxChars => FieldError(path, "Character limit exceeded").invalidNel
+      case n if n.length > maxChars => FieldError(path, s"'${path.substring(path.indexOf('.')+1,path.length)}' Character limit exceeded").invalidNel
       case n => n.validNel
     }
   }

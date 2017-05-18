@@ -75,7 +75,6 @@ object FieldChecks {
     override def hint(path: String, jv: JsValue): List[FieldHint] = jv.validate[T].asOpt.map(t => v.hintText(path, t)).getOrElse(Nil)
   }
 
-
   def decodeString(jv: JsValue): Option[String] = {
     jv match {
       case JsString(s) => Some(s)

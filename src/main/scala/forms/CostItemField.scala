@@ -26,7 +26,7 @@ import play.twirl.api.Html
 case class CostItemField(name: String) extends Field {
   implicit val civReads = Json.reads[CostItemValues]
 
-  val itemNameField = TextField(Some("Item"), s"$name.itemName", isNumeric = false, 20)
+  val itemNameField = TextField(Some("Item"), s"$name.itemName", isEnabled = true, isMandatory = false, isNumeric = false, 20)
   val costField = CurrencyField(Some("Cost"), s"$name.cost")
   val justificationField = TextAreaField(Some("Justification of item"), s"$name.justification", 500)
 

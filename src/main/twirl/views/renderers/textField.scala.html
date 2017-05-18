@@ -18,8 +18,13 @@
     if(field.isNumeric) "number" else ""
 }
 
+@mandatoryClass(isMandatory: Boolean) = @{
+if(isMandatory) { <span class="mandatory-field">*</span> }
+}
+
+@if(field.isEnabled){
 <div class='form-group @errorClass'>
-    @questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text</label> }
+    @questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text @mandatoryClass(field.isMandatory)</label> }
     @errors.map { e =>
         <span class="error-message" role="alert">@e.err</span>
     }
@@ -39,3 +44,4 @@
     }
     </div>
 </div>
+}

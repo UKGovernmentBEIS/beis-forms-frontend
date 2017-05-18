@@ -121,10 +121,10 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def completeSection(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[FieldErrors] = {
     sectionDetail(id, sectionNumber).flatMap {
       case Some(app) =>
-        FieldCheckHelpers.check(doc, checksFor(app.formSection)) match {
-          case Nil => post(urls.complete(id, sectionNumber), doc).map(_ => List())
-          case errs => {
-            Future.successful(errs)
+          FieldCheckHelpers.check(doc, checksFor(app.formSection)) match {
+              case Nil => post(urls.complete(id, sectionNumber), doc).map(_ => List())
+              case errs => {
+                  Future.successful(errs)
           }
         }
       // TODO: Need better error handling here

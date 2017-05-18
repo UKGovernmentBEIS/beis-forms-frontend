@@ -191,7 +191,7 @@ class ApplicationController @Inject()(
     formSection.fields.map(f => f.name -> f.check).toMap
 
   val APP_REF_FIELD_NAME = "application-ref"
-  val appRefField = TextField(label = Some(APP_REF_FIELD_NAME), name = APP_REF_FIELD_NAME, isNumeric = false, maxWords = 20)
+  val appRefField = TextField(label = Some(APP_REF_FIELD_NAME), name = APP_REF_FIELD_NAME, isEnabled = true, isMandatory = false, isNumeric = false, maxWords = 200)
   val appRefQuestion = Map(APP_REF_FIELD_NAME -> Question("My application reference"))
 
   def editPersonalRef(id: ApplicationId) = AppDetailAction(id) { request =>

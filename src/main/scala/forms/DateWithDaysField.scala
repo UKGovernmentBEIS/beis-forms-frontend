@@ -28,7 +28,7 @@ case class DateWithDaysField(name: String, allowPast: Boolean, minValue: Int, ma
   implicit val dtrReads = Json.reads[DateWithDaysValues]
 
   val dateField = DateField(s"$name.date", allowPast)
-  val daysField = TextField(Some("Days"), s"$name.days", isNumeric = true, 1)
+  val daysField = TextField(Some("Days"), s"$name.days", isEnabled = true, isMandatory = false, isNumeric = true, 1)
 
   val validator = DateWithDaysValidator(allowPast, minValue, maxValue)
 

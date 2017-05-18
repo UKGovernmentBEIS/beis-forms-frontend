@@ -37,6 +37,16 @@
   padding: 2px 0;
 }
 
+.mandatory-field {
+  @include bold-19;
+  color: $error-colour;
+
+  clear: both;
+
+  margin: 0;
+  padding: 2px 0;
+}
+
 .form-label .error-message,
 .form-label-bold .error-message {
   padding-top: 4px;
