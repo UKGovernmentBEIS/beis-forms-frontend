@@ -30,8 +30,8 @@ package object helpers {
       s.questions.flatMap { q =>
         s.fields.find(_.name == q.key).flatMap {
           case TextField(_, _, _, _, _, wordCount) => Some(s"Word count: $wordCount")
-          case TextAreaField(_, _, wordCount) => Some(s"Word count: $wordCount")
-          case AddressField(_, _, wordCount) => Some(s"Word count: $wordCount")
+          case TextAreaField(_, _, _, _, wordCount) => Some(s"Word count: $wordCount")
+          case AddressField(_, _, _, _, wordCount) => Some(s"Word count: $wordCount")
           case _ => None
         }.map(constraintText => (q.key, constraintText))
       }

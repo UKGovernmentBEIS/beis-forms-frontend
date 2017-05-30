@@ -58,6 +58,7 @@ package object services
   implicit val odFmt = Json.format[OpportunityDuration]
   implicit val oppFmt = Json.format[Opportunity]
   implicit val oppSummaryFmt = Json.format[OpportunitySummary]
+  implicit val messagesFmt = Json.format[Message]
 
   implicit val appSectionReads = Json.reads[ApplicationSection]
   implicit val appReads = Json.reads[Application]
@@ -74,10 +75,11 @@ package object services
   implicit val appFormReads = Json.reads[ApplicationForm]
   implicit val appDetailReads = Json.reads[ApplicationDetail]
   implicit val appSecDetailReads = Json.reads[ApplicationSectionDetail]
+  implicit val messageReads = Json.reads[Message]
 
   implicit val civReads = Json.reads[CostItemValues]
   implicit val ciReads = Json.reads[CostItem]
   implicit val fileUploadReads = Json.reads[FileUploadItem]
-  //  implicit val fileDeleteReads = Json.reads[FileUploadItem]
+
 
 }

@@ -14,7 +14,11 @@
 @errorClass = @{if(errors.nonEmpty) "error" else ""}
 @invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
 
-@questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text</label>
+@mandatoryClass(isMandatory: Boolean) = @{
+if(isMandatory) { <span class="mandatory-field">*</span> }
+}
+
+@questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text @mandatoryClass(field.isMandatory)</label>
         <p class="text">@q.longDescription</p>
         <details>
             <summary role="button"><span class="summary">Help with this section</span></summary>

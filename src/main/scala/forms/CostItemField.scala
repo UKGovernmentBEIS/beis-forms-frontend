@@ -28,7 +28,7 @@ case class CostItemField(name: String) extends Field {
 
   val itemNameField = TextField(Some("Item"), s"$name.itemName", isEnabled = true, isMandatory = false, isNumeric = false, 20)
   val costField = CurrencyField(Some("Cost"), s"$name.cost")
-  val justificationField = TextAreaField(Some("Justification of item"), s"$name.justification", 500)
+  val justificationField = TextAreaField(Some("Justification of item"), s"$name.justification", true,true, 500)
 
   override def check: FieldCheck = FieldChecks.fromValidator(CostItemValidator)
 

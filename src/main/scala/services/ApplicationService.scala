@@ -136,7 +136,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     formSection.sectionType match {
       case SectionTypeForm => formSection.fields.map(f => f.name -> f.check).toMap
       case SectionTypeCostList => Map("items" -> FieldChecks.fromValidator(CostSectionValidator(2000)))
-      case SectionTypeFileList => Map("items" -> FieldChecks.noCheck)
+      //case SectionTypeFileList => Map("items" -> FieldChecks.noCheck)
+      case SectionTypeFileList =>
+        formSection.fields.map({
+          f => f.name -> f.check
+        }).toMap
     }
 
   override def saveItem(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[FieldErrors] = {

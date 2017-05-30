@@ -23,7 +23,7 @@ import models._
 import play.api.libs.json.JsObject
 import play.twirl.api.Html
 
-case class TextAreaField(label: Option[String], name: String, maxWords: Int) extends Field {
+case class TextAreaField(label: Option[String], name: String, isEnabled: Boolean, isMandatory: Boolean, maxWords: Int) extends Field {
 
   override val check: FieldCheck = FieldChecks.mandatoryText(maxWords)
 

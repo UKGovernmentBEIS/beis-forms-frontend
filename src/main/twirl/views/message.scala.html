@@ -1,0 +1,47 @@
+@(msg: Message)
+
+@import org.joda.time.format.DateTimeFormat
+
+@main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.dashBoard().url)), displayUserName=Some("Experienced Eric")) {
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <div class="text">
+            <section>
+                <h1 class="heading-xlarge">Message</h1>
+                <div>
+
+                    <p><span class="bold">From: </span> @msg.sentBy.id</p>
+                    <p><span class="bold">Sent at: </span> @DateTimeFormat.forPattern("dd MMMM yyyy").print(msg.sentAt)</p>
+                    <p><span class="bold"> Application ref: </span> <a href="/application/@msg.applicationId.get.id">@msg.applicationId.get.id</a></p>
+                </div>
+
+                <div>
+                    <p><span class="bold">Message: </span>
+                        @msg.message</p>
+                     <p></p>
+                </div>
+
+
+            </section>
+        </div>
+    </div>
+
+    <div id="support-column" class="column-third">
+        <aside role="complementary">
+            <hr class="hr-blue">
+            <h2 class="heading-medium no-top-margin">Support</h2>
+            <ul class="list spacious">
+
+                <li>
+
+                </li>
+
+            </ul>
+        </aside>
+    </div>
+
+</div>
+
+
+}

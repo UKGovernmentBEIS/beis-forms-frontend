@@ -17,14 +17,18 @@
 
 package controllers
 
+import java.io.File
+import java.net.URL
 import javax.inject.Inject
 
 import actions.{AppDetailAction, AppSectionAction}
 import config.Config
 import eu.timepit.refined.auto._
-import forms.{FileList, FileUploadItem, TextField}
 import forms.validation._
+import forms.{FileList, FileUploadItem, TextField}
 import models._
+import org.apache.commons.io.FilenameUtils
+import org.apache.commons.lang3.StringUtils
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.Files.TemporaryFile
@@ -33,16 +37,6 @@ import play.api.mvc._
 import services.{AWSOps, ApplicationFormOps, ApplicationOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
-import java.io.File
-import java.net.URL
-
-import akka.stream.scaladsl.FileIO
-import com.amazonaws.services.s3.model.S3ObjectInputStream
-import org.apache.commons.io.{FileUtils, FilenameUtils, IOUtils}
-import play.api.http.HttpEntity
-import play.api.mvc.Results.{Ok, Redirect}
-
-import scala.util.Success
 
 class ApplicationController @Inject()(
                                        actionHandler: ActionHandler,
@@ -222,21 +216,26 @@ class ApplicationController @Inject()(
   def uploadFileAWSS3(id: ApplicationId,  sectionNumber: AppSectionNumber, appSection: ApplicationSectionDetail , fieldValues: JsObject,
                  f: File, userId : String) :Future[Result] = {
 
-    val filename  = fieldValues.fields.head._2.toString().replaceAll("^\"|\"$", "")
-    val extension = FilenameUtils.getExtension(filename)
-    /* File Upload */
-    val fileUploadItem:FileUploadItem = FileUploadItem(filename)
-
-    /** Save file metadata in Database and Physical file in AWS S3 call **/
-    applications.saveFileItem(id, sectionNumber, JsObject(Seq("item" -> Json.toJson(fileUploadItem)))).flatMap {
-      case itemnumber => {
-        /** AWS S3 call to store files on AWS S3 **/
-        awsS3.upload(ResourceKey( itemnumber + "." + extension), f).flatMap{
-            case Nil =>  Future.successful(redirectToSectionForm(id, sectionNumber))
-            case errs => Future.successful(showFileItemForm(appSection, null, errs))
+    val filename = fieldValues.fields.head._2.toString().replaceAll("^\"|\"$", "")
+    StringUtils.isEmpty(filename) match {
+        case true => Future.successful(showFileItemForm(appSection, null, List(FieldError("supportingDocuments", "File name should not be empty"))))
+        case false => {
+            val extension = FilenameUtils.getExtension(filename)
+            /* File Upload */
+            val fileUploadItem:FileUploadItem = FileUploadItem(filename)
+            /** Save file metadata in Database and Physical file in AWS S3  **/
+            applications.saveFileItem(id, sectionNumber, JsObject(Seq("item" -> Json.toJson(fileUploadItem)))).flatMap {
+                case itemnumber => {
+                    /** AWS S3 call to store files on AWS S3 **/
+                    awsS3.upload(ResourceKey( itemnumber + "." + extension), f).flatMap{
+                        case Nil =>  Future.successful(redirectToSectionForm(id, sectionNumber))
+                        case errs => Future.successful(showFileItemForm(appSection, null, errs))
+                    }
+                }
+            }
         }
-      }
-     }
+    }
+
   }
 
   /** This method

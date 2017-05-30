@@ -22,11 +22,15 @@ import forms.validation._
 import models._
 import play.api.libs.json.{JsObject, Json}
 
-case class CompanyInfoField(label: Option[String], name: String, maxWords: Int) extends Field {
+case class CompanyInfoField(label: Option[String], name: String, maxWords: Int, isEnabled: Boolean, isMandatory: Boolean) extends Field {
   implicit val companyInfoReads = Json.reads[CompanyInfoValues]
 
   override def previewCheck: FieldCheck = FieldChecks.mandatoryCheck
-  override def check: FieldCheck = FieldChecks.fromValidator(CompanyInfoValidator)
+
+  override val check: FieldCheck = isMandatory match {
+    case true => FieldChecks.fromValidator(CompanyInfoValidator)
+    case false => FieldChecks.noCheck
+  }
 
   val companyNameField = TextField(Some("What is your Company Name"), s"$name.companyname", isEnabled = true, isMandatory = false, isNumeric = false, 20)
   val companyNumberField = TextField(Some("What is your Company Number"), s"$name.companynumber", isEnabled = true, isMandatory = false, isNumeric = false, 20)

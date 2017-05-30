@@ -13,6 +13,10 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
 @errorClass = @{if(errors.nonEmpty) "error" else ""}
 @invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
 
+@mandatoryClass(isMandatory: Boolean) = @{
+if(isMandatory) { <span class="mandatory-field">*</span> }
+}
+
 @questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text</label>
 <p class="text">@q.longDescription</p>
 <details>
@@ -74,7 +78,7 @@ errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
     <span class="error-message" role="alert">@e.err</span>
     }
 
-    <p>Please enter any text to search your address:
+    <p>Please enter any text to search your address: @mandatoryClass(field.isMandatory)
         <input type="text" id="address" class="form-control address-text-field " title="address" name="address" value="" aria-label="what is your company Address? " aria-invalid="false" autocomplete="on">
     </p>
 

@@ -36,7 +36,7 @@ case class TextField(label: Option[String], name: String, isEnabled: Boolean, is
   override def renderFormInput(questions: Map[String, Question], answers: JsObject, errs: Seq[FieldError], hints: Seq[FieldHint]) =
     views.html.renderers.textField(this, questions, JsonHelpers.flatten(answers), errs, hints)
 
-  override def renderPreview(questions: Map[String, Question], answers: JsObject) =
+    override def renderPreview(questions: Map[String, Question], answers: JsObject) =
     views.html.renderers.preview.textField(this, JsonHelpers.flatten(answers))
 
 }

@@ -20,7 +20,8 @@ package forms.validation
 import cats.data.ValidatedNel
 import shapeless.tag._
 
-case class FieldError(path: String, err: String)
+case class
+FieldError(path: String, err: String)
 
 case class FieldHint(path: String, hint: String, matchingJsType: Option[String] = None, matchingJsConfig: Option[String] = None)
 

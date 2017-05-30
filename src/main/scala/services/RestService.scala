@@ -38,7 +38,9 @@ trait RestService {
         case 200 => {
             response.json.validate[A] match {
             case JsSuccess(a, _) => Some(a)
-            case JsError(errs) => throw JsonParseException("GET", request, response, errs)
+            case JsError(errs) => {
+               throw JsonParseException("GET", request, response, errs)
+            }
           }
         }
         case 404 => None

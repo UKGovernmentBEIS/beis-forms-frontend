@@ -1,6 +1,10 @@
 @(apps: Seq[Application],
-os: Seq[Opportunity]
+os: Seq[Opportunity],
+ms: Seq[Message]
 )
+
+@import org.joda.time.format.DateTimeFormat
+
 @main("Opportunity list - BEIS", displayUserName=Some("Experienced Eric")) {
 
 
@@ -55,9 +59,15 @@ os: Seq[Opportunity]
 
         <table class="spacious">
             <tr>
-                <th role="presentation">Subject</th>
+                <th role="presentation">Message</th><th role="presentation">Sent by</th><th role="presentation">Sent at</th>
             </tr>
-            <tr><td>WIP</td></tr>
+            @for((o,i) <- ms.zipWithIndex) {
+            <tr>
+                <td>@{i+1}. <a href="/message/@o.id.id/messageboard">@o.message</a></td>
+                <td>@o.sentBy.id</td>
+                <td>@DateTimeFormat.forPattern("dd-MMMM-yyyy").print(o.sentAt)</td>
+            </tr>
+            }
         </table>
     </div>
 

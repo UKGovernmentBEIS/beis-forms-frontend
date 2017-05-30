@@ -51,6 +51,7 @@ f.substring(f.lastIndexOf("."), f.length)
 
                 </td>
                 <td>@fileUploadItem.supportingDocuments</td>
+                <input type="hidden" id="fileupload" title="title" name="supportingDocuments" value="@fileUploadItem.supportingDocuments">
                 <td>
                     @fileUploadItem.itemNumber.map { num =>
                     <a href="@controllers.routes.ApplicationController.deleteFileItem(app.id, app.formSection.sectionNumber, num, fileextension(fileUploadItem.supportingDocuments))">

@@ -25,18 +25,19 @@ import config.Config
 import eu.timepit.refined.auto._
 import forms.validation._
 import forms.{FileList, FileUploadItem, TextField}
-import models._
+import models.{LongId, _}
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.json._
 import play.api.mvc.{Action, Controller, MultipartFormData, Result}
-import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
+import services.{ApplicationFormOps, ApplicationOps, MessageBoardOps, OpportunityOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class DashBoardController @Inject()(   applications: ApplicationOps,
-                                       opps: OpportunityOps
+                                       opps: OpportunityOps,
+                                       msgs: MessageBoardOps
                                      )(implicit ec: ExecutionContext)
   extends Controller with ApplicationResults {
 
@@ -50,9 +51,13 @@ class DashBoardController @Inject()(   applications: ApplicationOps,
         oppsSeq <- opps.getOpenOpportunitySummaries.map {
         case ops: Seq[Opportunity] => ops
         case _ => Seq()
+        };
+        msgSeq <- msgs.byUserId(UserId(userId)).map {
+        case msgs: Seq[Message] => msgs
+        case _ => Seq()
         }
     )yield(
-      Ok(views.html.showDashBoard(appsSeq, oppsSeq )))
+      Ok(views.html.showDashBoard(appsSeq, oppsSeq, msgSeq)))
   }
 
 }

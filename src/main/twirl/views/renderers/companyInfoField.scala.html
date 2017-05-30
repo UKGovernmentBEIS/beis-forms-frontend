@@ -33,6 +33,9 @@ if(errorsFor(f).nonEmpty) {
 s.replace(".", "\\\\.")
 }
 
+@mandatoryClass(isMandatory: Boolean) = @{
+if(isMandatory) { <span class="mandatory-field">*</span> }
+}
 
 <!--------Company Name using JQuery AutoComplete---------------------->
 <!--------TODO:- Move this JS code to common JS file---------------------->
@@ -106,7 +109,7 @@ s.replace(".", "\\\\.")
     @defining(field.companyNameField) { f =>
     <div class="column-two-thirds no-l-padding">
         <div class="form-group @errorClassFor(f)">
-            <label for="@f.name">@f.label</label>
+            <label for="@f.name">@f.label @mandatoryClass(field.isMandatory)</label>
             @errorBlock(f)
             <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
                    value='@answers.get(f.name)' aria-label="what is your company Name? " aria-invalid="false" autocomplete="on">

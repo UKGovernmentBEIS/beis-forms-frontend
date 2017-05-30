@@ -35,7 +35,8 @@ case class Contact(telephone: String, email: String, web: String, twitter: Strin
  class ContactValidator(textfields : Seq[TextField]) extends FieldValidator[ContactValues, Contact]{
 
   override def doValidation(path: String, contactValues: Normalised[ContactValues]): ValidatedNel[FieldError, Contact] = {
-  def createValidator(f : String) = {
+
+    def createValidator(f : String) = {
     val textfield = textfields.filter(t => t.name == s"$path.$f")
     textfield.head.isMandatory match {
       case true => MandatoryValidator(Some(f)).andThen(CharacterCountValidator(textfield.head.maxWords))

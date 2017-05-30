@@ -29,11 +29,15 @@ import cats.syntax.validated._
 import forms.validation.FieldValidator.Normalised
 
 
-case class FileUploadField(label: Option[String], name: String, maxWords: Int) extends Field {
+case class FileUploadField(label: Option[String], name: String, isEnabled: Boolean, isMandatory: Boolean, maxWords: Int) extends Field {
 
   implicit val fileuploadReads = Json.reads[FileUploadItem]
 
-  override val check: FieldCheck = FieldChecks.mandatoryText(maxWords)
+  override val check: FieldCheck = isMandatory match {
+    //case true => FieldChecks.mandatoryCheck //Need to enable this incase atleast one file is mandatory
+    case true => FieldChecks.noCheck
+    case false => FieldChecks.noCheck
+  }
 
   override def previewCheck: FieldCheck = FieldChecks.mandatoryCheck
 

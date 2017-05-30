@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OppSectionController @Inject()(appForms: ApplicationFormOps,opportunities: OpportunityOps, OpportunityAction: OpportunityAction)(implicit ec: ExecutionContext) extends Controller {
   val sectionFieldName = "section"
-  val sectionField = TextAreaField(None, sectionFieldName, 500)
+  val sectionField = TextAreaField(None, sectionFieldName, true, true, 500)
 
   def doEdit(opp: Opportunity, sectionNum: OppSectionNumber, initial: JsObject, errs: Seq[forms.validation.FieldError] = Nil) = {
     val hints = FieldCheckHelpers.hinting(initial, Map(sectionFieldName -> sectionField.check))

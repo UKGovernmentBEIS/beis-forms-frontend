@@ -152,8 +152,8 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
         }
       case SectionTypeFileList => {
         val itemValues: Seq[JsValue] = (answers \ "items").validate[JsArray].asOpt.map(_.value).getOrElse(Seq())
-        val fileUploadItem = itemValues.flatMap(_.validate[FileUploadItem].asOpt)
-        Ok(views.html.sectionFileList(app, fileUploadItem, answers, errs, hints))
+        val fileUploadItems = itemValues.flatMap(_.validate[FileUploadItem].asOpt)
+        Ok(views.html.sectionFileList(app, fileUploadItems, answers, errs, hints))
       }
 
     }
