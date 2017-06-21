@@ -19,19 +19,20 @@ package controllers
 
 import javax.inject.Inject
 
+import config.Config
 import forms.FileUploadItem
 import forms.validation.CostItem
 import models._
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results._
-import services.{ApplicationFormOps, ApplicationOps, OpportunityOps}
+import services.{ApplicationFormOps, ApplicationOps, OpportunityOps, BusinessProcessOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps)(implicit ec: ExecutionContext)
+class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: ApplicationFormOps, opportunities: OpportunityOps,
+                              processes: BusinessProcessOps)(implicit ec: ExecutionContext)
   extends ApplicationResults {
-  //implicit val fileuploadReads = Json.reads[FileUploadItem]
 
   import ApplicationData._
   import FieldCheckHelpers._
@@ -73,7 +74,6 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-
   def doSaveFileItem(app: ApplicationSectionDetail, fieldValues: JsObject): Future[Result] = {
     JsonHelpers.allFieldsEmpty(fieldValues) match {
       case true => applications.deleteSection(app.id, app.sectionNumber).map(_ => redirectToOverview(app.id))
@@ -96,8 +96,58 @@ class ActionHandler @Inject()(applications: ApplicationOps, applicationForms: Ap
     }
   }
 
-  def doSubmit(id: ApplicationId): Future[Option[SubmittedApplicationRef]] = {
-    applications.submit(id)
+  def doSubmit(id: ApplicationId, applicationDetail: ApplicationDetail, userId: UserId): Future[Option[SubmittedApplicationRef]] = {
+    /** Create ProcessDefinition object and activate  **/
+    val pdId = ProcessDefinitionId(Config.config.bpm.procdefId)
+    val pd = ProcessDefinition(pdId, BusinessKey("businessKey"+ pdId), false, processVariables(applicationDetail, userId))
+
+    /* 2 type of submits to Activiti
+        1)Submit Firt time by Applicant:- Create new Process Instance AND Update the BEIS forms Applicationn status to Submit
+        2)Submit for 'Request for more Info':- Update existing ProcessInstance AND Update the BEIS forms Applicationn status to Submit
+    */
+    applicationDetail.appStatus.appStatus match {
+        case "In progress" =>  {  /* Fresh Application , so activate the BPM Process*/
+
+          /** Save Application only if Process database is updated without errors */
+          processes.activateProcess(pdId, pd).flatMap{
+            case Some(procInstId) =>{
+              /** Update Appplication record with Submit status **/
+              applications.submit(id)
+            }
+            case _ => Future.successful(None)
+          }
+        }
+        case _ => { /* Already submitted Application, and came back for 'Request for more info' */
+
+            /* Update the existing process instance - get ExecutionID for the Task*/
+            processes.getExecution(pdId, ActivityId("BEIS_Wait_Application")).flatMap{
+              case Some(executionId) =>{
+
+                    /** Update Activiti Execution to Signal the Waiting Task to release by sending ExecutionID**/
+                    val s  = ActionId("signal")
+                    val pv =  ProcessVariable("approvestatus", "Submitted")
+                    processes.sendSignal(executionId, Action(s, Seq(pv))).flatMap {
+                        case Some(executionId) => {
+                          /** Update Appplication record with Submit status **/
+                          applications.submit(id)
+                        }
+                        case _ => Future.successful(None)
+                    }
+              }
+              case _ => Future.successful(None)
+            }
+        }
+    }
+  }
+
+  def processVariables(applicationDetail: ApplicationDetail, userId: UserId): Seq[ProcessVariable] ={
+    val pvAppId       =  ProcessVariable("ApplicationId", applicationDetail.id.id.toString)
+    val pvApplicant   =  ProcessVariable("Applicant", userId.id)
+    val status        =  ProcessVariable("approvestatus", "Submitted")
+    val pvAppRef      =  ProcessVariable("ApplicationReference", applicationDetail.personalReference.getOrElse("Not set").toString)
+    val pvOpId        =  ProcessVariable("OpportunityId", applicationDetail.opportunity.id.id.toString())
+    val pvOpTitle     =  ProcessVariable("OpportunityTitle", applicationDetail.opportunity.title)
+    Seq(pvAppId, pvApplicant, status, pvAppRef, pvOpId, pvOpTitle)
   }
 
   def completeAndPreview(app: ApplicationSectionDetail, fieldValues: JsObject): Future[Result] = {

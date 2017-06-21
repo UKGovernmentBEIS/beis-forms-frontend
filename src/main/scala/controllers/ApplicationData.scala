@@ -19,7 +19,7 @@ package controllers
 
 import forms._
 import forms.validation._
-import models.AppSectionNumber
+import models.{AppSectionNumber, BusinessKey, ProcessDefinition, ProcessDefinitionId, ProcessVariable}
 import play.api.libs.json._
 
 object ApplicationData {
@@ -35,6 +35,11 @@ object ApplicationData {
   implicit val civReads = Json.reads[CostItemValues]
   implicit val ciReads = Json.reads[CostItem]
   implicit val cifReads = Json.reads[FileUploadItem]
+  implicit val processDefinitionFmt1 = Json.format[ProcessDefinitionId]
+  implicit val processDefinitionFmt2 = Json.format[BusinessKey]
+  implicit val processDefinitionFmt3 = Json.format[ProcessVariable]
+  implicit val processDefinitionFmt = Json.format[ProcessDefinition]
+
 
   def itemChecksFor(sectionNumber: AppSectionNumber): Map[String, FieldCheck] = sectionNumber.num.value match {
     case

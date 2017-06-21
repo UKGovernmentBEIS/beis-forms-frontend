@@ -60,6 +60,10 @@ package object services
   implicit val oppSummaryFmt = Json.format[OpportunitySummary]
   implicit val messagesFmt = Json.format[Message]
 
+  implicit val processVariableFmt = Json.format[ProcessVariable]
+  implicit val processDefinitionFmt = Json.format[ProcessDefinition]
+  implicit val actionFmt = Json.format[Action]
+
   implicit val appSectionReads = Json.reads[ApplicationSection]
   implicit val appReads = Json.reads[Application]
   implicit val appSecOvRead = Json.reads[ApplicationSectionOverview]
@@ -80,6 +84,12 @@ package object services
   implicit val civReads = Json.reads[CostItemValues]
   implicit val ciReads = Json.reads[CostItem]
   implicit val fileUploadReads = Json.reads[FileUploadItem]
+
+  implicit val processVariableReads = Json.reads[ProcessVariable]
+
+  implicit val processDefinitionReads = Json.reads[ProcessDefinition]
+  implicit val actionReads = Json.reads[Action]
+
 
 
 }

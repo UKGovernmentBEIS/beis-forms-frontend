@@ -30,11 +30,8 @@ trait FieldCheck {
 object FieldChecks {
   val mandatoryCheck = new FieldCheck {
     override def apply(path: String, value: JsValue): List[FieldError] = {
-
-    println("33===path:-" + path)
-    println("44===value:-" + value)
-    MandatoryValidator(None).validate(path, value.validate[String].asOpt).fold(_.toList, _ => List())
-  }
+      MandatoryValidator(None).validate(path, value.validate[String].asOpt).fold(_.toList, _ => List())
+    }
 
     override def hint(path: String, value: JsValue): List[FieldHint] = List()
   }

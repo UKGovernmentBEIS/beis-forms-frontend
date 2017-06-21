@@ -35,6 +35,7 @@ import play.api.libs.Files.TemporaryFile
 import play.api.libs.json._
 import play.api.mvc._
 import services.{AWSOps, ApplicationFormOps, ApplicationOps, OpportunityOps}
+import play.api.mvc.{Action, Controller, MultipartFormData, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -50,10 +51,8 @@ class ApplicationController @Inject()(
   extends Controller with ApplicationResults {
 
   implicit val fileuploadReads = Json.reads[FileUploadItem]
-    implicit val fileuploadItemF = Json.format[FileUploadItem]
+  implicit val fileuploadItemF = Json.format[FileUploadItem]
   implicit val fileListReads = Json.reads[FileList]
-  //implicit val urlF = Json.writes[URL]
-
 
   //TODO:- Need to check user is Authenticated and Authorised before access the methds - to be done using Shibboleth??
   def showForForm(id: ApplicationFormId) = Action.async { request =>
@@ -155,18 +154,19 @@ class ApplicationController @Inject()(
   }
 
   def submit(id: ApplicationId) = AppDetailAction(id).async { request =>
+    val userId = request.session.get("username").getOrElse("Unauthorised User")
     val sectionErrors: Seq[SectionError] = request.appDetail.applicationForm.sections.sortBy(_.sectionNumber).flatMap { fs =>
       request.appDetail.sections.find(_.sectionNumber == fs.sectionNumber) match {
         case None => Some(SectionError(fs, "Not started"))
         case Some(s) => checkSection(fs, s)
       }
     }
-
     if (sectionErrors.isEmpty) {
       val emailto = Config.config.business.emailto
       val dtf = DateTimeFormat.forPattern("HH:mm:ss")
       val appsubmittime = dtf.print(LocalDateTime.now()) //returns TimeZone Europe/London
-      actionHandler.doSubmit(id).map {
+      //actionHandler.doSubmit(id).map {
+      actionHandler.doSubmit(id, request.appDetail, UserId(userId)).map {
         case Some(e) =>
           Ok(views.html.submitApplicationForm(e.applicationRef, emailto, appsubmittime))
         case None => NotFound

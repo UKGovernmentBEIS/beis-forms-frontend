@@ -31,7 +31,6 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller, MultipartFormData, Result}
 import play.api.mvc.Security
 import org.activiti.engine.{ProcessEngine, ProcessEngines}
-import org.h2.jdbcx.JdbcDataSource
 import scala.concurrent.{ExecutionContext, Future}
 
 /********************************************************************************
@@ -75,53 +74,6 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
       },
       user=> {
 
-        //ACTIVITI implemetation code - please dont delete
-        // Set-up an H2 database.
-        /*Class.forName("org.h2.Driver")
-        //val jdbcUrl = "jdbc:h2:activiti"
-        //Class.forName("org.postgresql.Driver")
-        val jdbcUrl = "jdbc:postgresql://localhost:5433/activiti"
-
-
-         implicit val ds = new JdbcDataSource()
-         ds.setURL(jdbcUrl)
-         val processEngine = new ProcessEngineWrapper
-        */
-       /* val processId = processEngine.deploy {
-          <process id="logging-test" name="Logging Test" isExecutable="true">
-            <startEvent id="start" name="Start"></startEvent>
-            <sequenceFlow id="flow1" sourceRef="start" targetRef="example-task"></sequenceFlow>
-            <serviceTask id="example-task" name="Service Task" activiti:class={classOf[ExampleServiceTask].getName}></serviceTask>
-            <sequenceFlow id="flow2" sourceRef="example-task" targetRef="end"></sequenceFlow>
-            <endEvent id="end" name="End"></endEvent>
-          </process>
-        }
-
-        val pdl:util.List[ProcessDefinition]  = processEngine.engine.getRepositoryService().
-          createProcessDefinitionQuery().list();
-
-        start(2401, processEngine)
-        */
-         /*
-         val pdl1:util.List[ProcessDefinition] = processEngine.engine.getRepositoryService().
-         createProcessDefinitionQuery().list();
-
-        val utl:util.List[Task] = processEngine.engine.getTaskService().createTaskQuery().
-          taskUnnassigned().list();
-
-        val atl:util.List[Task] = processEngine.engine.getTaskService().createTaskQuery().
-          taskAssignee(Security.username).list();
-
-        println("=========pdl1:-" + pdl1.size())
-        println("=========pdl1:-" + pdl1.toString())
-
-        println("=========utl:-" + utl.size())
-        println("=========utl:-" + utl.toString())
-
-        println("=========atl:-" + atl.size())
-        println("=========atl:-" + atl.toString())
-
-        */
         //TODO:- Here the Roles come into place and Users belong to Group or Role
         implicit val userIdInSession = user.name
         if(user.name.equals("applicant1") || user.name.equals("applicant2") || user.name.equals("applicant3") || user.name.equals("applicant4"))

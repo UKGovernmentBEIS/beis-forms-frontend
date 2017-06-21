@@ -31,6 +31,8 @@ trait RestService {
 
   implicit def ec: ExecutionContext
 
+  private val authorizationHeader = "Authorization"
+
   def getOpt[A: Reads](url: String): Future[Option[A]] = {
     val request: WSRequest = ws.url(url)
     request.get.map { response =>
@@ -111,6 +113,58 @@ trait RestService {
       response.status match {
         case 200 => response.json.validate[A] match {
           case JsSuccess(a, _) =>  Some(a)
+          case JsError(errs) => throw JsonParseException("GET", request, response, errs)
+        }
+        case 404 => None
+        case _ => throw RestFailure("GET", request, response)
+      }
+    }
+  }
+
+  def getOptWithAuthHeaderUpdate[A: Reads](url: String,  auth: String): Future[Option[A]] = {
+    val request:WSRequest = ws.url(url)
+    val requestWithUserHeader: WSRequest = ws.url(url).withHeaders((authorizationHeader, auth))
+    requestWithUserHeader.get.map { response =>
+
+      response.status match {
+        case 200 => {
+          val d = response.json \ "data"
+          (d (0) \ "id").validate[A] match {
+            case JsSuccess(a, _) => Some(a)
+            case JsError(errs) => throw JsonParseException("GET", request, response, errs)
+          }
+        }
+        case 404 => None
+        case _ => throw RestFailure("GET", request, response)
+      }
+    }
+  }
+
+  def postOptWithAuthHeaderUpdate[A: Reads, B: Writes](url: String,  auth: String, body: B): Future[Option[A]] = {
+    val request:WSRequest = ws.url(url)
+    val requestWithUserHeader: WSRequest = ws.url(url).withHeaders((authorizationHeader, auth))
+    requestWithUserHeader.post(Json.toJson(body)).map { response =>
+      response.status match {
+        /* Activiti response contains new ProcessInstance, but need to validate id only*/
+        case 201 => (response.json \ "id").validate[A] match {
+          case JsSuccess(a, _) => Some(a)
+          case JsError(errs) => throw JsonParseException("GET", request, response, errs)
+        }
+        case 404 => None
+        case _ => throw RestFailure("GET", request, response)
+      }
+    }
+  }
+
+  def putOptWithAuthHeaderUpdate[A: Reads, B: Writes](url: String,  auth: String, body: B): Future[Option[A]] = {
+    val request:WSRequest = ws.url(url)
+    val requestWithUserHeader: WSRequest = ws.url(url).withHeaders((authorizationHeader, auth))
+    requestWithUserHeader.put(Json.toJson(body)).map { response =>
+
+       response.status match {
+        /* Activiti response contains new ProcessInstance, but need to validate id only*/
+        case 200 => (response.json \ "id").validate[A] match {
+          case JsSuccess(a, _) => Some(a)
           case JsError(errs) => throw JsonParseException("GET", request, response, errs)
         }
         case 404 => None

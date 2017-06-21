@@ -15,21 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package config
+package services
 
-case class BusinessConfig(baseUrl: String, bpmServerUrl: String, emailto: String, addressSearch: String)
-case class FileConfig(fileuploaddirectory: String, filedownloaddirectory: String)
-case class AWSConfig(accesskey: String, secretkey: String, region: String, bucket: String)
-case class BPMConfig(procuser: String, procpwd: String, procdefId: String)
-case class FieldValidation(telephone: Int, email: Int, companyname: Int)
+import com.google.inject.ImplementedBy
+import controllers.FieldCheckHelpers.FieldErrors
+import models._
+import play.api.libs.Files.TemporaryFile
+import play.api.libs.json.{JsObject, Reads}
+import play.api.mvc.MultipartFormData
 
-case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig,
-                  file: FileConfig, aws: AWSConfig, bpm: BPMConfig, fieldvalidation: FieldValidation)
+import scala.concurrent.Future
 
-object Config {
+@ImplementedBy(classOf[BusinessProcessService])
+trait BusinessProcessOps {
 
-  import pureconfig._
-
-  lazy val config: Config = loadConfig[Config].get
-
+  //def byId(id: ProcessId): Future[Option[Process]]
+  def activateProcess(id: ProcessDefinitionId, doc: ProcessDefinition): Future[Option[ProcessInstanceId]]
+  def getExecution(id: ProcessDefinitionId, activityId: ActivityId): Future[Option[ExecutionId]]
+  def sendSignal(id: ExecutionId, action: Action): Future[Option[ExecutionId]]
 }

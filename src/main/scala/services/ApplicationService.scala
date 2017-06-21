@@ -61,6 +61,9 @@ class ApplicationURLs(baseUrl: String) {
   def submit(id: ApplicationId) =
     s"$baseUrl/application/${id.id}/submit"
 
+  def submitWithProcInstanceId(id: ApplicationId, processInstanceId: ProcessInstanceId) =
+    s"$baseUrl/application/${id.id}/processinstance/${processInstanceId.id}/submit"
+
   def personalRef(id: ApplicationId) =
     s"$baseUrl/application/${id.id}/personal-ref"
 
