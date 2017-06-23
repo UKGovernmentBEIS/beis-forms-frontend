@@ -26,6 +26,7 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[MessageBoardService])
 trait MessageBoardOps {
   def byId(id: MessageId): Future[Option[Message]]
+  def delete(id: MessageId): Future[Unit]
   def byUserId(userId: UserId): Future[Seq[Message]]
 }
 

@@ -35,6 +35,7 @@ class MessageBoardURLs(baseUrl: String) {
 
   def messages : String = s"$baseUrl/messageboard"
   def messagesById(id: MessageId): String = s"$baseUrl/message/${id.id}/messageboard"
+  def delete(id: MessageId): String = s"$baseUrl/message/${id.id}/messageboard"
 }
 
 class MessageBoardService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
@@ -45,6 +46,9 @@ class MessageBoardService @Inject()(val ws: WSClient)(implicit val ec: Execution
 
   override def byId(id: MessageId) : Future[Option[Message]] =
     getOpt[Message](urls.messagesById(id))
+
+  override def delete(id: MessageId): Future[Unit] =
+    delete(urls.messagesById(id))
 
   override def byUserId(userId: UserId): Future[Seq[Message]] = {
     getWithHeaderUpdate[Seq[Message], String](urls.messages, userId.id).flatMap(msgs =>

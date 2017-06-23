@@ -20,6 +20,8 @@ package controllers
 import javax.inject.Inject
 
 import models._
+import play.api.libs.json.JsArray
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, Controller}
 import services.{ApplicationOps, MessageBoardOps, OpportunityOps}
 
@@ -34,4 +36,11 @@ class MessageBoardController @Inject()(messages: MessageBoardOps)(implicit ec: E
       case None => Future.successful(NotFound)
     }
   }
+
+  def delete(id:MessageId) = Action.async {
+    messages.delete(id).flatMap { _ =>
+      Future.successful(Redirect(controllers.routes.DashBoardController.dashBoard()))
+    }
+  }
+
 }

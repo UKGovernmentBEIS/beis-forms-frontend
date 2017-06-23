@@ -46,6 +46,7 @@ GET         /application/:id/section/:num/downloadfile/:key           controller
 
 GET         /dashboard                                                controllers.DashBoardController.dashBoard
 GET         /message/:id/messageboard                                 controllers.MessageBoardController.byId(id:MessageId)
+GET         /message/:id/delete                                       controllers.MessageBoardController.delete(id:MessageId)
 
 GET         /reset                                                    controllers.ApplicationController.reset
 GET         /wip                                                      controllers.OpportunityController.wip(backUrl: String)

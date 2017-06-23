@@ -35,7 +35,6 @@ import play.api.libs.Files.TemporaryFile
 import play.api.libs.json._
 import play.api.mvc._
 import services.{AWSOps, ApplicationFormOps, ApplicationOps, OpportunityOps}
-import play.api.mvc.{Action, Controller, MultipartFormData, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -51,8 +50,10 @@ class ApplicationController @Inject()(
   extends Controller with ApplicationResults {
 
   implicit val fileuploadReads = Json.reads[FileUploadItem]
-  implicit val fileuploadItemF = Json.format[FileUploadItem]
+    implicit val fileuploadItemF = Json.format[FileUploadItem]
   implicit val fileListReads = Json.reads[FileList]
+  //implicit val urlF = Json.writes[URL]
+
 
   //TODO:- Need to check user is Authenticated and Authorised before access the methds - to be done using Shibboleth??
   def showForForm(id: ApplicationFormId) = Action.async { request =>
@@ -133,6 +134,7 @@ class ApplicationController @Inject()(
       request.body.action match {
 
         case Complete => {
+          println("Complete------")
           actionHandler.doComplete(request.appSection, request.body.values)
       }
         case Save => {

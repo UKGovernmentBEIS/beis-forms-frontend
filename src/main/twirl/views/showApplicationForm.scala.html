@@ -77,8 +77,8 @@
                     </table>
                     <p class="rifs-form-buttons">
                         @app.appStatus.appStatus match {
-                        case "Submitted" => { <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS" disabled> }
-                        case _ => { <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS"> }
+                        case "Need more Info" | "In progress" => { <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS"> }
+                        case _ => { <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS" disabled> }
                         }
 
                         <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(app.id)" class="flat nobreak">

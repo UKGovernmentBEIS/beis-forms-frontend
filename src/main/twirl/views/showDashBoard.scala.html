@@ -43,7 +43,11 @@ ms: Seq[Message]
             @for((o,i) <- apps.zipWithIndex) {
             <tr>
                 <td>@{i+1}. <a href="/application/@o.id.id">@o.personalReference.getOrElse("< No title >")</a></td>
-                <td>@o.appStatus.appStatus</td>
+                <td>@o.appStatus.appStatus
+                    @if(o.appStatus.appStatus == "Approved"){
+                    <img src="@routes.Assets.at("images/checkmark-26x26.png")" alt="" width=26 height=26 class="greentick">
+                    }
+                </td>
             </tr>
             }
         </table>
@@ -60,12 +64,16 @@ ms: Seq[Message]
         <table class="spacious">
             <tr>
                 <th role="presentation">Message</th><th role="presentation">Sent by</th><th role="presentation">Sent at</th>
+                <th role="presentation"></th>
             </tr>
             @for((o,i) <- ms.zipWithIndex) {
             <tr>
                 <td>@{i+1}. <a href="/message/@o.id.id/messageboard">@o.message</a></td>
                 <td>@o.sentBy.id</td>
                 <td>@DateTimeFormat.forPattern("dd-MMMM-yyyy").print(o.sentAt)</td>
+                <td><a href="/message/@o.id.id/delete">
+                    <img src="@routes.Assets.at("images/delete.png")" width="18" height="20" alt="" style="visibility: visible">
+                </a></td>
             </tr>
             }
         </table>
