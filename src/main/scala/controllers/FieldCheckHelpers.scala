@@ -27,7 +27,7 @@ object FieldCheckHelpers {
   val noErrors: FieldErrors = List()
   type FieldHints = List[FieldHint]
 
-  def check(fieldValues: JsObject, checks: Map[String, FieldCheck]): FieldErrors = {
+    def check(fieldValues: JsObject, checks: Map[String, FieldCheck]): FieldErrors = {
     checkList(fieldValues, checks).flatMap { case (n, v, c) => c(n, v) }
   }
 
@@ -36,13 +36,18 @@ object FieldCheckHelpers {
   }
 
   def checkList(fieldValues: JsObject, checks: Map[String, FieldCheck]): List[(String, JsValue, FieldCheck)] = {
+
     checks.toList.map {
-      case ("", check) => ("", fieldValues, check)
-      case (fieldName, check) =>
+      case ("", check) =>  ("", fieldValues, check)
+
+      case (fieldName, check) => {
         fieldValues \ fieldName match {
           case JsDefined(jv) => (fieldName, jv, check)
+
           case _ => (fieldName, JsNull, check)
         }
+      }
+
     }
   }
 }

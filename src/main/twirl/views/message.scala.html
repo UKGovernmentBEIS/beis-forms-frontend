@@ -2,18 +2,18 @@
 
 @import org.joda.time.format.DateTimeFormat
 
-@main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.dashBoard().url)), displayUserName=Some("Experienced Eric")) {
+@main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.applicantDashBoard().url)), displayUserName=Some("Experienced Eric")) {
 
 <div class="grid-row">
     <div class="column-two-thirds">
         <div class="text">
             <section>
-                <h1 class="heading-xlarge">Message</h1>
+                <h1 class="heading-xlarge">Message 11</h1>
                 <div>
 
                     <p><span class="bold">From: </span> @msg.sentBy.id</p>
                     <p><span class="bold">Sent at: </span> @DateTimeFormat.forPattern("dd MMMM yyyy").print(msg.sentAt)</p>
-                    <p><span class="bold"> Application ref: </span> <a href="/application/@msg.applicationId.get.id">@msg.applicationId.get.id</a></p>
+                    <p><span class="bold"> Application ref: </span> <a href="/application/@msg.applicationId.get.id">Application</a></p>
                 </div>
 
                 <div>

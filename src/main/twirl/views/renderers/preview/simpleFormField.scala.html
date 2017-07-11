@@ -1,0 +1,13 @@
+@(field: forms.SimpleFormField, answers: Map[String, String])
+
+@field.simpleform.map { f=>
+
+@if( f.isEnabled) {
+    <div class="form-group ">
+        <label for="@f.name">@f.label </label>
+
+     @answers.get(f.name)
+
+    </div>
+}
+}

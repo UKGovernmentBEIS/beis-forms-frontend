@@ -1,0 +1,41 @@
+@(
+        app: ApplicationSectionDetail,
+        answers: play.api.libs.json.JsObject,
+        errs: List[forms.validation.FieldError],
+        hints:List[forms.validation.FieldHint]
+)
+
+@import partials._
+@import helpers._
+
+@main(s"${app.formSection.title} - BEIS", backLink=Some(BackLink("Return to application overview",controllers.simpleforms.routes.SimpleFormsController.show(app.id).url)), displayUserName=Some("Experienced Eric")) {
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
+                @app.formSection.title
+            </h1>
+
+            <form method="POST"
+                  action="@controllers.simpleforms.routes.SimpleFormsController.postSection(app.id, app.formSection.sectionNumber)"
+                  novalidate="novalidate" enctype="multipart/form-data">
+                @if(errs.nonEmpty) {
+                @errs.map { e =>
+                <span class="error-message" role="alert">@e.err</span>
+                }
+                }
+
+                @app.formSection.fields.map(_.renderFormInput(app.formSection.questionMap, answers, errs, hints))
+
+                <div class="rifs-form-buttons">
+                    <input type="submit" name="_fileUpload_button" class="button button--start" value="Upload"/>
+
+                    <a href="@controllers.simpleforms.routes.SimpleFormsController.showSectionSimpleForm(app.id, app.formSection.sectionNumber)" class="button--link-style">Cancel</a>
+                </div>
+            </form>
+        </div>
+        <div id="support-column" class="column-third">
+            @sidebar(app.opportunity.id, app.sectionCount, app.completedSectionCount)
+        </div>
+    </div>
+}

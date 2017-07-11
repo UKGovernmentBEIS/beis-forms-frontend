@@ -53,7 +53,7 @@ class ApplicationPreviewController @Inject()(
     val answers = request.appSection.section.map { s => s.answers }.getOrElse(JsObject(List.empty))
 
     request.appSection.formSection.sectionType match {
-      case SectionTypeForm =>
+      case SectionTypeForm | SimpleTypeForm =>
         renderSectionPreview(request.appSection, request.appSection.formSection.fields, answers, backLink, editLink)
       case SectionTypeCostList =>
         val costItems = request.appSection.section.flatMap(s => (s.answers \ "items").validate[List[CostItem]].asOpt).getOrElse(List.empty)

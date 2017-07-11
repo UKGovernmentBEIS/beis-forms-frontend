@@ -77,9 +77,10 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
         //TODO:- Here the Roles come into place and Users belong to Group or Role
         implicit val userIdInSession = user.name
         if(user.name.equals("applicant1") || user.name.equals("applicant2") || user.name.equals("applicant3") || user.name.equals("applicant4"))
-        Redirect(routes.DashBoardController.dashBoard()).withSession(Security.username -> user.name)
+        Redirect(routes.DashBoardController.applicantDashBoard()).withSession(Security.username -> user.name)
         else if(user.name.equals("portfoliomanager"))
-          Redirect(manage.routes.OpportunityController.showNewOpportunityForm()).withSession(Security.username -> user.name)
+          Redirect(routes.DashBoardController.staffDashBoard()).withSession(Security.username -> user.name)
+          //Redirect(manage.routes.OpportunityController.showNewOpportunityForm()).withSession(Security.username -> user.name)
         else
           Redirect(routes.OpportunityController.showOpportunities()).withSession(Security.username -> user.name)
       }

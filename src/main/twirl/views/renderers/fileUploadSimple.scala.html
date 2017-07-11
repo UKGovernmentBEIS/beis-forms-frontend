@@ -1,0 +1,48 @@
+
+@(field: forms.FileUploadField,
+            questions: Map[String, Question],
+            fileUploadItems: Seq[forms.FileUploadItem],
+            errs: Seq[forms.validation.FieldError],
+            hints: Seq[forms.validation.FieldHint])
+
+@import helpers._
+
+@errors = @{
+    errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
+}
+
+@errorClass = @{if(errors.nonEmpty) "error" else ""}
+@invalidTrueFalse = @{if(errors.nonEmpty) "true" else "false"}
+
+@mandatoryClass(isMandatory: Boolean) = @{
+if(isMandatory) { <span class="mandatory-field">*</span> }
+}
+
+@questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text @mandatoryClass(field.isMandatory)</label>
+        <p class="text">@q.longDescription</p>
+        <details>
+            <summary role="button"><span class="summary">Help with this section</span></summary>
+            <div class="panel panel-border-narrow">@for(line <- splitLines(q.helpText)) {
+                <p>@line</p>
+            }</div>
+        </details>
+    }
+
+    <!-- @errs.map { e =>
+        <span class="error-message" role="alert">@e.err</span>
+    } -->
+
+    <label for="@field.name">@field.label</label>
+
+
+    <label class="file-upload">
+        <input type="file" class="file-upload-field" name="file"/>
+        Choose file
+    </label>
+    <input type="text" id="fileupload" class="form-control fileupload-text-field" title="title" name="@field.name">
+
+    <div class="inline right-align hint-text" id="@(field.name)_hint_text">
+        @for(hint <- hints.find(_.path == field.name)) {
+            <span class="js__hint" data-for="@field.name" data-rule="@hint.matchingJsType" data-ruleconfig="@hint.matchingJsConfig">@hint.hint</span>
+        }
+    </div>

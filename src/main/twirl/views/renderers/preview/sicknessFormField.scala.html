@@ -1,0 +1,35 @@
+@(field: forms.ContactField, answers: Map[String, String])
+
+@defining(field.telephoneField) { f =>
+    @if( f.isEnabled) {
+    <p>
+        <h3>Telephone</h3>
+        @answers.getOrElse("contactDetails.telephone", "Not Available")
+    </p>
+    }
+}
+@defining(field.emailField) { f =>
+    @if( f.isEnabled) {
+    <p>
+        <h3>Email</h3>
+        @answers.getOrElse("contactDetails.email", "Not Available")
+    </p>
+    }
+}
+@defining(field.webField) { f =>
+    @if( f.isEnabled) {
+    <p>
+        <h3>Web Address</h3>
+        @answers.getOrElse("contactDetails.web", "Not Available")
+    </p>
+    }
+}
+
+@defining(field.twitterField) { f =>
+    @if( f.isEnabled) {
+    <p>
+        <h3>Twitter</h3>
+        @answers.getOrElse("contactDetails.twitter", "Not Available")
+    </p>
+    }
+}

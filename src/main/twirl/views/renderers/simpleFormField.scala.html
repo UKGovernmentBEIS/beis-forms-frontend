@@ -1,0 +1,104 @@
+@(field: forms.SimpleFormField,
+questions: Map[String, Question],
+answers: Map[String, String],
+errs: Seq[forms.validation.FieldError],
+hints: Seq[forms.validation.FieldHint]
+)
+
+@import helpers._
+@import eu.timepit.refined.auto._
+
+@errors = @{
+errs.filter(p => p.path == field.name || p.path.startsWith(s"${field.name}."))
+}
+
+@errorClass = @{
+if(errors.nonEmpty) "error" else ""
+}
+
+@errorClassFor(f: forms.Field) = @{
+if(errs.exists(_.path == f.name)) "error" else ""
+}
+
+@errorsFor(f: forms.Field) = @{
+errs.filter(_.path == f.name)
+}
+
+@errorBlock(f: forms.Field) = @{
+if(errorsFor(f).nonEmpty) {
+<span class="error-message">{errorsFor(f).head.err}</span>
+}
+}
+
+@mandatoryClass(isMandatory: Boolean) = @{
+if(isMandatory) { <span class="mandatory-field">*</span> }
+}
+
+
+
+@field.simpleform.map { f=>
+
+    @if( f.isEnabled) {
+        <div class="column-two-thirds no-l-padding">
+            <div class="form-group @errorClassFor(f)">
+                <label for="@f.name">@f.label @mandatoryClass(f.isMandatory)</label>
+                @errorBlock(f)
+
+                @f.fieldType match {
+                   case "text" => {
+                             <input type="text" id="@f.name" class="form-control text-field" title="@f.name" name="@f.name"
+                                    value='@answers.get(f.name)'>
+                   }
+                   case "textArea" => {
+                             <textarea id="@f.name" class="form-control generic textarea-resize" title="@f.name"
+                                    name="@f.name">@answers.get(f.name)</textarea>
+                   }
+                   case "date" => {
+                             <div class='date-selector'>
+                                <div>
+                                    <label for="@(f.name).day">Day</label>
+                                    <input type="text" title="Day" id="@(f.name).day" name="@(f.name).day" value='@answers.get(s"${f.name}.day")' class="form-control" maxlength="2" pattern="[0-9]*">
+                                </div>
+                                <div>
+                                    <label for="@(f.name).month">Month</label>
+                                    <input type="text" title="Month" id="@(f.name).month" name="@(f.name).month" value='@answers.get(s"${f.name}.month")' class="form-control" maxlength="2" pattern="[0-9]*">
+                                </div>
+                                <div>
+                                    <label for="@(f.name).year">Year</label>
+                                    <input type="text" title="4 digit year" id="@(f.name).year" name="@(f.name).year" value='@answers.get(s"${f.name}.year")' class="form-control year" maxlength="4" pattern="[0-9]*">
+                                </div>
+                             </div>
+                   }
+                   case "fileupload" => {
+                             <label class="file-upload">
+                             <input type="file" class="file-upload-field" name="file"/>
+                             Choose file
+                             </label>
+                             <input type="text" id="fileupload" class="form-control fileupload-text-field" title="title" name="@f.name">
+                   }
+
+
+                }
+
+            </div>
+        </div>
+    }
+}
+
+
+
+<div class='form-group @errorClass'>
+    @errors.map { e =>
+    <span class="error-message" role="alert">@e.err</span>
+    }
+    @questions.get(field.name).map { q => <label for="@field.name" class="question">@q.text</label> }
+
+    <div class="inline right-align hint-text" id="@(field.name)_hint_text">
+        @for(hint <- hints.find(_.path == field.name)) {
+        <span class="js__hint" data-for="@field.name" data-rule="@hint.matchingJsType" data-ruleconfig="@hint.matchingJsConfig">@hint.hint</span>
+        }
+    </div>
+
+
+
+    </div>

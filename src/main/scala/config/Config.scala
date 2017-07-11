@@ -20,7 +20,7 @@ package config
 case class BusinessConfig(baseUrl: String, bpmServerUrl: String, emailto: String, addressSearch: String)
 case class FileConfig(fileuploaddirectory: String, filedownloaddirectory: String)
 case class AWSConfig(accesskey: String, secretkey: String, region: String, bucket: String)
-case class BPMConfig(procuser: String, procpwd: String, procdefId: String)
+case class BPMConfig(bpmreqd: String, procuser: String, procpwd: String, procdefId: String)
 case class FieldValidation(telephone: Int, email: Int, companyname: Int)
 
 case class Config(logAssets: Option[Boolean], logRequests: Boolean, business: BusinessConfig,

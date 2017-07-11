@@ -39,7 +39,7 @@ class MessageBoardController @Inject()(messages: MessageBoardOps)(implicit ec: E
 
   def delete(id:MessageId) = Action.async {
     messages.delete(id).flatMap { _ =>
-      Future.successful(Redirect(controllers.routes.DashBoardController.dashBoard()))
+      Future.successful(Redirect(controllers.routes.DashBoardController.applicantDashBoard()))
     }
   }
 

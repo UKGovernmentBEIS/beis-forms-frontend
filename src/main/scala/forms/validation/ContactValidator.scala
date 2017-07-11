@@ -29,7 +29,10 @@ case class ContactValues(telephone: Option[String], email: Option[String], web: 
 case class Contact(telephone: String, email: String, web: String, twitter: String)
 
  object ContactValidator  {
-  def apply(textfields : Seq[TextField]) = new ContactValidator(textfields)
+  def apply(textfields : Seq[TextField]) = {
+    println("== ContactValidator in ContactValidator=======:-"+ textfields)
+    new ContactValidator(textfields)
+  }
 }
 
  class ContactValidator(textfields : Seq[TextField]) extends FieldValidator[ContactValues, Contact]{
@@ -45,11 +48,13 @@ case class Contact(telephone: String, email: String, web: String, twitter: Strin
   }
 
   val telephoneValidator = createValidator("telephone").validate(s"$path.telephone", contactValues.telephone)
+
   val emailValidator = createValidator("email").validate(s"$path.email", contactValues.email)
+
   val webValidator = createValidator("web").validate(s"$path.web", contactValues.web)
   val twitterValidator = createValidator("twitter").validate(s"$path.twitter", contactValues.twitter)
 
-  (telephoneValidator |@| emailValidator |@| webValidator |@| twitterValidator).map(Contact.apply(_, _, _, _))
+    (telephoneValidator |@| emailValidator |@| webValidator |@| twitterValidator).map(Contact.apply(_, _, _, _))
   }
 
 }

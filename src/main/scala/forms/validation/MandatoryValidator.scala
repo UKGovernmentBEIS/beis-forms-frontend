@@ -25,10 +25,14 @@ case class MandatoryValidator(displayName: Option[String] = None) extends FieldV
   override def normalise(os: Option[String]): Option[String] = os.map(_.trim())
 
   override def doValidation(path: String, so: Normalised[Option[String]]): ValidatedNel[FieldError, String] = {
+    println("==MandatoryValidator doValidation======"+ path)
+    println("==MandatoryValidator doValidation======"+ so)
     val fieldName = displayName.map(n => s"'$n'").getOrElse("Field")
     denormal(so) match {
-      case None | Some("") => FieldError(path, s"$fieldName cannot be empty").invalidNel
+      //case None | Some("") => FieldError(path, s"$fieldName cannot be empty").invalidNel
+      case Some("") => FieldError(path, s"$fieldName cannot be empty").invalidNel
       case Some(n) => n.validNel
+      case None => "".validNel
     }
   }
 }

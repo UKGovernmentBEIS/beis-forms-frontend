@@ -1,0 +1,39 @@
+@(apprefno: Long, emailto: String, submittime: String)
+
+@main(s"Application submitted - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.staffDashBoard().url)), displayUserName=Some("Experienced Eric")) {
+
+<!-- main content -->
+    <div>
+        <div class="rifs-confirmation-container" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
+            <h1 class="heading-xlarge"> Sickness absence Application submitted @submittime</h1>
+           <!-- <p class="bold-medium"> Your reference number is</p>
+            <p class="bold-xlarge"> @("%04d".format(apprefno))</p> -->
+        </div>
+
+        <div class="text">
+            <p>
+                We have sent a confirmation email to <span class="nobreak bold-small">@emailto</span>
+            </p>
+
+            <h2 class="heading-maedium">What happens next? </h2>
+            <p>
+                What to do next
+                Expected length of illness (if known)
+            <p>    - Retain this form for completion of Section 2 - Return to work discussion  </p>
+            <p>    - Make sure this absence is recorded by including it in your department's absence report for payroll   </p>
+            <p>    - If the absence is the result of an accident or incident which occurred at work, then an accident reporting form must be
+                      completed.
+                  The absence must also be reported separately to the Health, Safety and Environment Advisory Service  </p>
+            <p>    - Where an absence is four or more days in duration then the employee should also complete the self-certification form
+                  SC2 for Statutory Sick Pay purposes, and submit this to Payroll </p>
+
+            <h2 class="heading-medium">Contact </h2>
+
+            <p>
+                Email: <a href="mailto:fundingteam@@example.com">hr@@beis.gov.uk</a><br/>
+                Phone: <a href="tel:+44-08081-570000">08081 570000</a> (Example)<br>
+                    <a href="https://www.gov.uk/call-charges">Find out about call charges</a>
+            </p>
+        </div>
+    </div>
+}

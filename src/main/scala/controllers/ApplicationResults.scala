@@ -27,8 +27,15 @@ trait ApplicationResults {
   def sectionFormCall(applicationId: ApplicationId, sectionNumber: AppSectionNumber) =
     controllers.routes.ApplicationController.showSectionForm(applicationId, sectionNumber)
 
+  def sectionSimpleFormCall(applicationId: ApplicationId, sectionNumber: AppSectionNumber) =
+    controllers.simpleforms.routes.SimpleFormsController.showSectionSimpleForm(applicationId, sectionNumber)
+
   def redirectToSectionForm(applicationId: ApplicationId, sectionNumber: AppSectionNumber) = Redirect(sectionFormCall(applicationId, sectionNumber))
 
   def redirectToOverview(applicationId: ApplicationId) = Redirect(controllers.routes.ApplicationController.show(applicationId))
+
+  def redirectToSimpleSectionForm(applicationId: ApplicationId, sectionNumber: AppSectionNumber) = Redirect(sectionSimpleFormCall(applicationId, sectionNumber))
+
+  def redirectToSimpleFormOverview(applicationId: ApplicationId) = Redirect(controllers.simpleforms.routes.SimpleFormsController.show(applicationId))
 
 }

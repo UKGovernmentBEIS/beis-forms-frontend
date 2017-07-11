@@ -33,15 +33,17 @@ import play.api.libs.json._
 import play.api.mvc.{Action, Controller, MultipartFormData, Result}
 import services.{ApplicationFormOps, ApplicationOps, MessageBoardOps, OpportunityOps}
 
+import scala.concurrent
 import scala.concurrent.{ExecutionContext, Future}
 
 class DashBoardController @Inject()(   applications: ApplicationOps,
                                        opps: OpportunityOps,
+                                       appforms: ApplicationFormOps,
                                        msgs: MessageBoardOps
                                      )(implicit ec: ExecutionContext)
   extends Controller with ApplicationResults {
 
-  def dashBoard = Action.async { implicit request =>
+  def applicantDashBoard = Action.async { implicit request =>
     val userId = request.session.get("username").getOrElse("Unauthorised User")
     for(
         appsSeq <- applications.getApplicationsByUserId(UserId(userId)).map{
@@ -57,7 +59,39 @@ class DashBoardController @Inject()(   applications: ApplicationOps,
         case _ => Seq()
         }
     )yield(
-      Ok(views.html.showDashBoard(appsSeq, oppsSeq, msgSeq)))
+      Ok(views.html.showApplicantDashBoard(appsSeq, oppsSeq, msgSeq)))
   }
+  def staffDashBoard = Action.async { implicit request =>
+    val userId = request.session.get("username").getOrElse("Unauthorised User")
 
+    for(
+
+      oppsSeq <- opps.getOpenOpportunitySummaries.map {
+          case ops: Seq[Opportunity] => //ops
+        {
+
+          ops.filter( op =>
+            appforms.byOpportunityId(op.id).map(  s=> s.getOrElse(ApplicationForm(null,null,null)).sections.head.sectionType.name)
+              == "simpleform")
+          ops
+        }
+
+          /*oppsSeq <- opps.getOpenOpportunitySummaries.map {
+          case ops: Seq[Opportunity] => //ops
+          {
+
+            ops.filter( op =>
+              appforms.byOpportunityId(op.id).map(  s=> s.getOrElse(ApplicationForm(null,null,null)).sections.head.sectionType.name)
+                == "simpleform")
+
+          }*/
+        case _ => Seq()
+      }/*;
+      msgSeq <- msgs.byUserId(UserId(userId)).map {
+        case msgs: Seq[Message] => msgs
+        case _ => Seq()
+      }*/
+    )yield(
+      Ok(views.html.showStaffDashBoard(/*appsSeq, */oppsSeq/*, msgSeq*/)))
+  }
 }

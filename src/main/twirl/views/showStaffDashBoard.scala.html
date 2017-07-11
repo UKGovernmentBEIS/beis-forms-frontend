@@ -1,0 +1,66 @@
+@(
+//apps: Seq[Application],
+os: Seq[Opportunity]//,
+//ms: Seq[Message]
+)
+
+@import org.joda.time.format.DateTimeFormat
+
+@main("Opportunity list - BEIS", displayUserName=Some("Experienced Eric")) {
+
+
+<div>
+    <h1 class="heading-xlarge">BEIS Staff Dashboard</h1>
+</div>
+
+<div class="grid-row">
+     <div class="column-half">
+         <!--<h1> Available Apps </h1>
+
+           <p class="lede">Links to all open BEIS opportunities</p>
+
+           <table class="spacious">
+              <tr>
+                  <th role="presentation">Opportunity title</th> <th role="presentation">Value</th>
+              </tr>
+              @for((o,i) <- os.zipWithIndex) {
+              <tr>
+                  <td>{i+1}. <a href="/opportunity/o.id.id">o.title</a></td>
+                  <td>&pound;("%,.0f".format(o.value.amount))</td>
+              </tr>
+              }
+          </table>-->
+         <h1> Available Forms </h1>
+
+         <p class="lede">Links to all BEIS Forms</p>
+
+         <table class="spacious">
+             <tr><th role="presentation">Form Name</th> <th role="presentation">Action</th><th role="presentation">&nbsp;</th></tr>
+             <tr><td>1. Sickness Absence Form</td>
+                 <td> <a href="/simple_application_form/2/apply">Apply</a></td>
+                 <td> <a href="@routes.Assets.at("images/Sickness-absence-report.png")">View</a></td>
+             </tr>
+         </table>
+     </div>
+
+
+    <!--  <div class="column-half">
+          <h1> Build Apps </h1>
+
+          <p class="lede">Links to all BEIS Applications</p>
+
+          <table class="spacious">
+              <tr><th role="presentation">App Name</th></tr>
+              <tr><td>1. <a href="/manage/opportunity/new">Grant Funding</a></td></tr>
+              <tr><td>3. <a href="/manage/opportunity/new">Grant Funding with Back office processing</a></td></tr>
+              <tr><td>4. <a href="/manage/opportunity/new">Simple Apps</a></td></tr>
+          </table>
+
+      </div>  -->
+  </div>
+
+
+
+
+  }
+

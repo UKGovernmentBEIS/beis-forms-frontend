@@ -19,7 +19,6 @@ textarea.form-control {
   width: 100%;
 }
 
-
 input.fileupload-text-field,
 textarea.form-control {
   padding: 6px;
@@ -44,6 +43,19 @@ textarea.form-control {
   padding: 6px;
   width: 80%;
 }
+
+textarea.form-control-simpleform {
+  height: 10em;
+  padding: 6px;
+  width: 100%;
+}
+
+textarea.form-control.generic {
+  padding: 6px;
+  height: 10em;
+  width: 100%;
+}
+
 
 textarea.form-control {
   height: 10em;

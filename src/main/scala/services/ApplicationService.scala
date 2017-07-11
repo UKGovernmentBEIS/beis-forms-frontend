@@ -61,6 +61,9 @@ class ApplicationURLs(baseUrl: String) {
   def submit(id: ApplicationId) =
     s"$baseUrl/application/${id.id}/submit"
 
+  def submitSimpleForm(id: ApplicationId) =
+    s"$baseUrl/application/${id.id}/submitsimpleform"
+
   def submitWithProcInstanceId(id: ApplicationId, processInstanceId: ProcessInstanceId) =
     s"$baseUrl/application/${id.id}/processinstance/${processInstanceId.id}/submit"
 
@@ -124,11 +127,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   override def completeSection(id: ApplicationId, sectionNumber: AppSectionNumber, doc: JsObject): Future[FieldErrors] = {
     sectionDetail(id, sectionNumber).flatMap {
       case Some(app) =>
-          FieldCheckHelpers.check(doc, checksFor(app.formSection)) match {
+
+        FieldCheckHelpers.check(doc, checksFor(app.formSection)) match {
               case Nil => post(urls.complete(id, sectionNumber), doc).map(_ => List())
-              case errs => {
+              case errs =>
                   Future.successful(errs)
-          }
         }
       // TODO: Need better error handling here
       case None => Future.successful(List(FieldError("", s"tried to save a non-existent section number $sectionNumber in application ${id.id}")))
@@ -136,8 +139,16 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
   }
 
   def checksFor(formSection: ApplicationFormSection): Map[String, FieldCheck] =
-    formSection.sectionType match {
-      case SectionTypeForm => formSection.fields.map(f => f.name -> f.check).toMap
+
+  formSection.sectionType match {
+      case SectionTypeForm | SimpleTypeForm =>
+        formSection.fields.map(f =>
+          println("== ApplicationService  2a========="+ f) //companyInfo  ----- sicknessAbsence
+        )
+        formSection.fields.map(f =>
+          f.name -> f.check).toMap
+
+
       case SectionTypeCostList => Map("items" -> FieldChecks.fromValidator(CostSectionValidator(2000)))
       //case SectionTypeFileList => Map("items" -> FieldChecks.noCheck)
       case SectionTypeFileList =>
@@ -189,6 +200,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
     getWithHeaderUpdate[Application, String](appFormUrls.applicationCreate(applicationFormId), userId.id)
   }
 
+
+  override def createForSimpleForm(applicationFormId: ApplicationFormId, userId: UserId): Future[Option[Application]] = {
+    getWithHeaderUpdate[Application, String](appFormUrls.applicationCreateSimpleForms(applicationFormId), userId.id)
+  }
+
   override def overview(id: ApplicationId): Future[Option[ApplicationOverview]] =
     getOpt[ApplicationOverview](urls.application(id))
 
@@ -209,6 +225,11 @@ class ApplicationService @Inject()(val ws: WSClient)(implicit val ec: ExecutionC
 
   override def submit(id: ApplicationId): Future[Option[SubmittedApplicationRef]] =
     postWithResult[SubmittedApplicationRef, String](urls.submit(id), "")
+
+  override def submitSimpleForm(id: ApplicationId): Future[Option[SubmittedApplicationRef]] =
+    postWithResult[SubmittedApplicationRef, String](urls.submitSimpleForm(id), "")
+
+
 
   override def updatePersonalReference(id: ApplicationId, reference: String) =
     post(urls.personalRef(id), reference)

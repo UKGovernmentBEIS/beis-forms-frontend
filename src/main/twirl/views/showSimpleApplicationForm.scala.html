@@ -10,31 +10,22 @@
     <a href="@controllers.routes.ApplicationController.editPersonalRef(app.id)">@title</a>
 }
 
-@main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.applicantDashBoard().url)), displayUserName=Some("Experienced Eric")) {
+@main(s"Overview - BEIS", backLink=Some(BackLink("Return to my dashboard", controllers.routes.DashBoardController.staffDashBoard().url)), displayUserName=Some("Experienced Eric")) {
     <!-- main content -->
 
     <div class="grid-row">
         <div class="column-two-thirds">
             <div>
                 <h1 class="heading-xlarge">
-                    <span class="heading-secondary">@formatId(app.opportunity.id.id): @app.opportunity.title</span>
-                    Application overview
+                    <span class="heading-secondary"> @app.opportunity.title</span>
+                    <!--Sickness Absence Form-->@app.opportunity.title
                 </h1>
 
-                <div class="grid-row">
-                    <div class="column-half">
-                        <p>
-                            @app.personalReference.getOrElse(changePersonalRef("Add personal reference"))
-                        </p>
-                    </div>
-                    <div class="column-half text-center-lg-only ">
-                        <p>
-                            @app.personalReference.map(_=>changePersonalRef("Change"))
-                        </p>
-                    </div>
-                </div>
 
-                <p>Complete all application sections before submitting to BEIS.</p>
+                <p>This form is to be used by the Employee to record notifications of sickness absence.
+                    For more information on recording and managing sickness absence. </p>
+
+                <p>    Complete all application sections before submitting to BEIS.</p>
             </div>
 
             @if(errs.nonEmpty) {
@@ -43,7 +34,7 @@
                     <ul class="list list-bullet">
                         @errs.map { e =>
                             <li class="bold-small">
-                                <a href="@controllers.routes.ApplicationController.showSectionForm(app.id, e.formSection.sectionNumber)">
+                                <a href="@controllers.simpleforms.routes.SimpleFormsController.showSectionSimpleForm(app.id, e.formSection.sectionNumber)">
                                 @e.formSection.title </a> &nbsp;
                                 @e.msg
                             </li>
@@ -53,12 +44,12 @@
             }
 
             <form method="POST"
-            action="@controllers.routes.ApplicationController.submit(app.id)">
+            action="@controllers.simpleforms.routes.SimpleFormsController.submit(app.id)">
                 <div>
                     <table class="spacious">
                         <thead>
                             <tr>
-                                <th scope="col">Event details</th>
+                                <th scope="col">Form section details</th>
                                 <th scope="col">Status</th>
                             </tr>
                         </thead>
@@ -66,7 +57,7 @@
                         @app.applicationForm.sections.sortBy(_.sectionNumber).map { fs =>
                             <tr>
                                 <td>
-                                    @fs.sectionNumber.num. <a id="section-@fs.sectionNumber.num-link" href="@controllers.routes.ApplicationController.showSectionForm(app.id, fs.sectionNumber)"> @fs.title</a>
+                                    @fs.sectionNumber.num. <a id="section-@fs.sectionNumber.num-link" href="@controllers.simpleforms.routes.SimpleFormsController.showSectionSimpleForm(app.id, fs.sectionNumber)"> @fs.title</a>
                                 </td>
                                 <td class="status-column">
                                 @statusText(app, fs.sectionNumber)
@@ -81,15 +72,15 @@
                         case _ => { <input type="submit" name="@Save.name" class="button button--start" value="Submit application to BEIS" disabled> }
                         }
 
-                        <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(app.id)" class="flat nobreak">
-                            Preview application</a>
+                        <!-- <a href="@controllers.routes.ApplicationPreviewController.applicationPreview(app.id)" class="flat nobreak">
+                            Preview application</a>-->
                     </p>
                 </div>
             </form>
         </div>
 
         <div id="support-column" class="column-third">
-            @sidebar(app.opportunity.id, app.sectionCount, app.completedSectionCount)
+            @simpleAppSidebar(app.opportunity.id, app.sectionCount, app.completedSectionCount)
         </div>
     </div>
 }

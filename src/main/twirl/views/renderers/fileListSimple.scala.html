@@ -1,0 +1,76 @@
+
+@(
+    app: ApplicationSectionDetail,
+    questions: Map[String, Question],
+    fileUploadItems: Seq[forms.FileUploadItem],
+    errs: Seq[forms.validation.FieldError],
+    hints: Seq[forms.validation.FieldHint])
+
+@import helpers._
+
+@filetype(f: String) = @{
+         if(f.endsWith(".pdf")) "pdf"
+    else if(f.endsWith(".doc")) "doc"
+    else if(f.endsWith(".xls")) "xls"
+    else if(f.endsWith(".txt")) "txt"
+    else if(f.endsWith(".jpg") || f.endsWith(".jpeg") || f.endsWith(".bmp") || f.endsWith(".gif") || f.endsWith(".png")) "image"
+    else "any"
+}
+
+@filename(f: Int) = @{
+    routes.Assets.at("images/files/" + f)
+}
+
+@fileicon(f: Int) = @{
+    routes.Assets.at("images/files/" + f)
+}
+
+@fileextension(f: String) = @{
+f.substring(f.lastIndexOf("."), f.length)
+}
+
+@errs.map { e =>
+<span class="error-message" role="alert">@e.err</span>
+}
+<table class="spacious" border="0">
+
+    <thead>
+        <tr>
+            <th scope="col" colspan="3">File Name</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @fileUploadItems.map { fileUploadItem =>
+            <tr>
+                <td width="10%">
+                   <!-- <a href="@filename(fileUploadItem.itemNumber.get)"> -->
+                    <a href="@controllers.simpleforms.routes.SimpleFormsController.downloadFileDirect(app.id, app.formSection.sectionNumber, ResourceKey(fileUploadItem.itemNumber.get.toString() + fileextension(fileUploadItem.supportingDocuments)) )">
+                      <img src="@routes.Assets.at("images/" +  filetype(fileUploadItem.supportingDocuments) + "_icon.png")" width="36" height="32" alt="" style="visibility: visible">
+                  </a>
+
+                </td>
+                <td>@fileUploadItem.supportingDocuments</td>
+                <input type="hidden" id="fileupload" title="title" name="supportingDocuments" value="@fileUploadItem.supportingDocuments">
+                <td>
+                    @fileUploadItem.itemNumber.map { num =>
+                    <a href="@controllers.simpleforms.routes.SimpleFormsController.deleteFileItem(app.id, app.formSection.sectionNumber, num, fileextension(fileUploadItem.supportingDocuments))">
+                    Delete</a></td>
+                }
+            </tr>
+        }
+        <tr class="footer-two-light">
+            <td colspan="3">
+                @if(fileUploadItems.isEmpty){
+                <a href="@controllers.simpleforms.routes.SimpleFormsController.addFileItem(app.id, app.formSection.sectionNumber)">
+                    Add Files</a>
+                }
+            </td>
+        </tr>
+    </tbody>
+
+</table>
+
+
+
+

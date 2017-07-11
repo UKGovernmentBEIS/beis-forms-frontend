@@ -3,6 +3,11 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
+###########################
+#### BEIS Home ############
+###########################
+GET         /beishome                                                 controllers.StartPageController.home
+
 GET         /robots.txt                                               controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                             controllers.Assets.at(path="/public", file)
 
@@ -44,7 +49,8 @@ GET         /application/:id/section/:num/add-file-item               controller
 GET         /application/:id/section/:num/item/:item/ext/:ext/filedelete   controllers.ApplicationController.deleteFileItem(id:ApplicationId, num: AppSectionNumber, item: Int, ext: String)
 GET         /application/:id/section/:num/downloadfile/:key           controllers.ApplicationController.downloadFileDirect(id:ApplicationId, num: AppSectionNumber, key: ResourceKey)
 
-GET         /dashboard                                                controllers.DashBoardController.dashBoard
+GET         /applicant/dashboard                                      controllers.DashBoardController.applicantDashBoard
+GET         /staff/dashboard                                          controllers.DashBoardController.staffDashBoard
 GET         /message/:id/messageboard                                 controllers.MessageBoardController.byId(id:MessageId)
 GET         /message/:id/delete                                       controllers.MessageBoardController.delete(id:MessageId)
 
@@ -89,7 +95,21 @@ POST        /manage/opportunity/:id/publish                           controller
 
 GET         /manage/opportunity/:id/preview                           controllers.manage.OpportunityController.showOpportunityPublishPreview(id: OpportunityId, section:Option[OppSectionNumber])
 
+###########################
+#BEIS Simple Apps
+#GET         /staff/sicknessabsenceform                               controllers.ApplicationController.showOpportunityPublishPreview(id: OpportunityId, section:Option[OppSectionNumber])
+#GET         /staff/sicknessabsenceform                               controllers.simpleforms.SimpleFormsController.showSicknessFormHome
+GET         /simple_application_form/:id/apply                        controllers.simpleforms.SimpleFormsController.createSimpleForm(id: ApplicationFormId)
+GET         /simpleapplication/:id                                    controllers.ApplicationController.simpleAppshow(id: ApplicationId)
+GET         /simple_application/:id/section/:num                      controllers.simpleforms.SimpleFormsController.showSectionSimpleForm(id: ApplicationId, num:AppSectionNumber)
+GET         /simple_application/:id                                   controllers.simpleforms.SimpleFormsController.show(id: ApplicationId)
+GET         /simple_application/:id/section/:num/add-file-item        controllers.simpleforms.SimpleFormsController.addFileItem(id:ApplicationId, num: AppSectionNumber)
+GET         /simple_application/:id/section/:num/item/:item/ext/:ext/filedelete   controllers.simpleforms.SimpleFormsController.deleteFileItem(id:ApplicationId, num: AppSectionNumber, item: Int, ext: String)
+GET         /application/:id/section/:num/downloadfile/:key           controllers.simpleforms.SimpleFormsController.downloadFileDirect(id:ApplicationId, num: AppSectionNumber, key: ResourceKey)
+POST        /simple_application/:id                                   controllers.simpleforms.SimpleFormsController.submit(id: ApplicationId)
+POST        /simple_application/:id/section/:num                      controllers.simpleforms.SimpleFormsController.postSection(id: ApplicationId, num:AppSectionNumber)
 
+###########################
 # Health check
 GET         /ping                                                     controllers.HealthCheckController.ping()
 GET         /version                                                  controllers.HealthCheckController.version

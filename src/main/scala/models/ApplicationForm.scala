@@ -56,6 +56,7 @@ object ApplicationFormSectionType {
       case SectionTypeForm.name => Some(SectionTypeForm)
       case SectionTypeCostList.name => Some(SectionTypeCostList)
       case SectionTypeFileList.name => Some(SectionTypeFileList)
+      case SimpleTypeForm.name => Some(SimpleTypeForm)
       case _ => None
     }
 
@@ -80,4 +81,8 @@ case object SectionTypeCostList extends ApplicationFormSectionType {
 
 case object SectionTypeFileList extends ApplicationFormSectionType {
   override val name: String = "file"
+}
+
+case object SimpleTypeForm extends ApplicationFormSectionType {
+  override val name: String = "simpleform"
 }
