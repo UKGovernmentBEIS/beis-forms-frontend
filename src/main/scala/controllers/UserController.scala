@@ -59,6 +59,7 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
     (username == "applicant2" && password == "1234") ||
     (username == "applicant3" && password == "1234") ||
     (username == "applicant4" && password == "1234") ||
+    (username == "manager" && password == "1234") ||
     (username == "portfoliomanager" && password == "1234")
   }
 
@@ -78,7 +79,7 @@ class UserController /* @Inject()(pe: ProcessEngine) */ extends Controller {
         implicit val userIdInSession = user.name
         if(user.name.equals("applicant1") || user.name.equals("applicant2") || user.name.equals("applicant3") || user.name.equals("applicant4"))
         Redirect(routes.DashBoardController.applicantDashBoard()).withSession(Security.username -> user.name)
-        else if(user.name.equals("portfoliomanager"))
+        else if(user.name.equals("manager") || user.name.equals("portfoliomanager"))
           Redirect(routes.DashBoardController.staffDashBoard()).withSession(Security.username -> user.name)
           //Redirect(manage.routes.OpportunityController.showNewOpportunityForm()).withSession(Security.username -> user.name)
         else

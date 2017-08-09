@@ -32,25 +32,27 @@ import java.util.Base64
   */
 
 
-class ProcessURLs(baseUrl: String) {
+class ProcessURLs(url: String) {
 
   /** BPM Activiti URLs **/
   def getProcess(id: ProcessDefinitionId) =
-      s"$baseUrl/activiti-rest/service/runtime/get-process-instances"
+      s"$url/service/runtime/get-process-instances"
   def activateProcess =
-    s"$baseUrl/activiti-rest/service/runtime/process-instances"
+    s"$url/service/runtime/process-instances"
   def execution (id: ProcessDefinitionId, activityId: ActivityId) =
-    s"$baseUrl/activiti-rest/service/runtime/executions?processDefinitionId=${id.id}&activityId=${activityId.id}"
+    s"$url/service/runtime/executions?processDefinitionId=${id.id}&activityId=${activityId.id}"
   def signal (id: ExecutionId) =
-    s"$baseUrl/activiti-rest/service/runtime/executions/${id.id}"
+    s"$url/service/runtime/executions/${id.id}"
 
 }
 
 class BusinessProcessService @Inject()(val ws: WSClient)(implicit val ec: ExecutionContext)
     extends BusinessProcessOps with RestService {
 
-   val baseUrl = Config.config.business.bpmServerUrl
-   val urls = new ProcessURLs(baseUrl)
+  val baseUrl = Config.config.business.bpmServerUrl
+  val bpmServerContext = Config.config.business.bpmServerContext
+
+   val urls = new ProcessURLs(baseUrl + bpmServerContext)
 
    private val basicAuth = {
      "Basic " + new String(Base64.getEncoder.encode((Config.config.bpm.procuser + ":" + Config.config.bpm.procpwd).getBytes))
